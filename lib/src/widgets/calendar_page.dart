@@ -37,7 +37,7 @@ class CalendarPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(color: Colors.white.withOpacity(0.27)),
-      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Table(
         children: [
           ..._buildCalendarDays(context),

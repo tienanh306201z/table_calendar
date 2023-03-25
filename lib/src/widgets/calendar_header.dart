@@ -47,7 +47,7 @@ class CalendarHeader extends StatelessWidget {
           color: Colors.white.withOpacity(0.27)
       ),
       margin: headerStyle.headerMargin,
-      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Column(
         children: [
           LayoutBuilder(
