@@ -23,10 +23,15 @@ class _TableRangeExampleState extends State<TableRangeExample> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFE3DBD2),
       appBar: AppBar(
         title: Text('TableCalendar - Range'),
       ),
       body: TableCalendar(
+        headerStyle: HeaderStyle(
+          formatButtonVisible: false,
+          titleCentered: true,
+        ),
         firstDay: kFirstDay,
         lastDay: kLastDay,
         focusedDay: _focusedDay,
