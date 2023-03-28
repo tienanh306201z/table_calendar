@@ -4,9 +4,9 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_month_picker/flutter_month_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:simple_gesture_detector/simple_gesture_detector.dart';
+import 'package:table_calendar/src/widgets/month_picker.dart';
 
 import 'customization/calendar_builders.dart';
 import 'customization/calendar_style.dart';
@@ -205,7 +205,10 @@ class TableCalendar<T> extends StatefulWidget {
   /// Called when the calendar is created. Exposes its PageController.
   final void Function(PageController pageController)? onCalendarCreated;
 
-  final ThemeData? monthPickerTheme;
+  final Color primaryColor;
+  final Color onPrimaryColor;
+  final Color surfaceColor;
+  final Color onSurfaceColor;
 
   /// Creates a `TableCalendar` widget.
   TableCalendar({
@@ -263,7 +266,10 @@ class TableCalendar<T> extends StatefulWidget {
     this.onPageChanged,
     this.onFormatChanged,
     this.onCalendarCreated,
-    this.monthPickerTheme,
+    this.primaryColor = Colors.blue,
+    this.onPrimaryColor = Colors.white,
+    this.surfaceColor = Colors.white,
+    this.onSurfaceColor = Colors.black,
   })  : assert(availableCalendarFormats.keys.contains(calendarFormat)),
         assert(availableCalendarFormats.length <= CalendarFormat.values.length),
         assert(weekendDays.isNotEmpty
@@ -457,42 +463,43 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
           ValueListenableBuilder<DateTime>(
             valueListenable: _focusedDay,
             builder: (context, value, _) {
-              return Theme(
-                  data: widget.monthPickerTheme ?? ThemeData.light(),
-                  child: CalendarHeader(
-                    headerTitleBuilder:
-                        widget.calendarBuilders.headerTitleBuilder,
-                    focusedMonth: value,
-                    onLeftChevronTap: _onLeftChevronTap,
-                    onRightChevronTap: _onRightChevronTap,
-                    onHeaderTap: () async {
-                      final selectedMonth = await showMonthPicker(
-                        context: context,
-                        initialDate: _focusedDay.value,
-                        firstDate: widget.firstDay,
-                        lastDate: widget.lastDay,
-                      );
-                      if (selectedMonth != null) {
-                        _pageController.jumpToPage(
-                          (selectedMonth.year - widget.firstDay.year) * 12 +
-                              selectedMonth.month -
-                              widget.firstDay.month,
-                        );
-                      }
-                    },
-                    headerStyle: widget.headerStyle,
-                    availableCalendarFormats: widget.availableCalendarFormats,
-                    calendarFormat: widget.calendarFormat,
-                    locale: widget.locale,
-                    onFormatButtonTap: (format) {
-                      assert(
-                        widget.onFormatChanged != null,
-                        'Using `FormatButton` without providing `onFormatChanged` will have no effect.',
-                      );
+              return CalendarHeader(
+                headerTitleBuilder: widget.calendarBuilders.headerTitleBuilder,
+                focusedMonth: value,
+                onLeftChevronTap: _onLeftChevronTap,
+                onRightChevronTap: _onRightChevronTap,
+                onHeaderTap: () async {
+                  final selectedMonth = await showMonthPicker(
+                    context: context,
+                    initialDate: _focusedDay.value,
+                    firstDate: widget.firstDay,
+                    lastDate: widget.lastDay,
+                    primaryColor: widget.primaryColor,
+                    onPrimaryColor: widget.onPrimaryColor,
+                    surfaceColor: widget.surfaceColor,
+                    onSurfaceColor: widget.onSurfaceColor,
+                  );
+                  if (selectedMonth != null) {
+                    _pageController.jumpToPage(
+                      (selectedMonth.year - widget.firstDay.year) * 12 +
+                          selectedMonth.month -
+                          widget.firstDay.month,
+                    );
+                  }
+                },
+                headerStyle: widget.headerStyle,
+                availableCalendarFormats: widget.availableCalendarFormats,
+                calendarFormat: widget.calendarFormat,
+                locale: widget.locale,
+                onFormatButtonTap: (format) {
+                  assert(
+                    widget.onFormatChanged != null,
+                    'Using `FormatButton` without providing `onFormatChanged` will have no effect.',
+                  );
 
-                      widget.onFormatChanged?.call(format);
-                    },
-                  ));
+                  widget.onFormatChanged?.call(format);
+                },
+              );
             },
           ),
         if (widget.headerVisible)

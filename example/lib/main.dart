@@ -3,7 +3,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:month_year_picker/month_year_picker.dart';
 
 import 'pages/basics_example.dart';
 import 'pages/complex_example.dart';
@@ -23,9 +22,6 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      localizationsDelegates: [
-        MonthYearPickerLocalizations.delegate,
-      ],
       home: StartPage(),
     );
   }

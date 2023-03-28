@@ -54,19 +54,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_localizations:
-    dependency: transitive
-    description: flutter
-    source: sdk
-    version: "0.0.0"
-  flutter_month_picker:
-    dependency: "direct main"
-    description:
-      name: flutter_month_picker
-      sha256: "745ee1eb3aba5cd5ed99f9ffaf97083d9d13944b24b8ab33e31dac0ea997219b"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.2"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -112,14 +99,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.8.0"
-  month_year_picker:
-    dependency: "direct main"
-    description:
-      name: month_year_picker
-      sha256: "050b74e62bc76a157d6fcad803db5398d5747a710a5095dfe46dcc5f4932b746"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.2.0+3"
   path:
     dependency: transitive
     description:
@@ -136,14 +115,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.0"
-  simple_month_year_picker:
-    dependency: "direct main"
-    description:
-      name: simple_month_year_picker
-      sha256: a0e871a441ed578c597d1071f3f3f0325c1ba97a3a4c6564cd9d7ba404998fd1
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.2"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -207,4 +178,4 @@ packages:
     version: "2.1.4"
 sdks:
   dart: ">=2.18.0 <3.0.0"
-  flutter: ">=3.0.0"
+  flutter: ">=1.17.0"

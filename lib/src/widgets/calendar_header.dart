@@ -66,10 +66,11 @@ class CalendarHeader extends StatelessWidget {
           ),
           Row(
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 18.0),
-                child: GestureDetector(
-                  onTap: onHeaderTap,
+              GestureDetector(
+                onTap: onHeaderTap,
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 18.0, vertical: 5),
                   child: Container(
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
