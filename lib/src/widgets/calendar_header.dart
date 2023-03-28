@@ -17,7 +17,6 @@ class CalendarHeader extends StatelessWidget {
   final VoidCallback onLeftChevronTap;
   final VoidCallback onRightChevronTap;
   final VoidCallback onHeaderTap;
-  final VoidCallback onHeaderLongPress;
   final ValueChanged<CalendarFormat> onFormatButtonTap;
   final Map<CalendarFormat, String> availableCalendarFormats;
   final DayBuilder? headerTitleBuilder;
@@ -31,7 +30,6 @@ class CalendarHeader extends StatelessWidget {
     required this.onLeftChevronTap,
     required this.onRightChevronTap,
     required this.onHeaderTap,
-    required this.onHeaderLongPress,
     required this.onFormatButtonTap,
     required this.availableCalendarFormats,
     this.headerTitleBuilder,
@@ -43,9 +41,7 @@ class CalendarHeader extends StatelessWidget {
         DateFormat.yMMMM(locale).format(focusedMonth);
 
     return Container(
-      decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.27)
-      ),
+      decoration: BoxDecoration(color: Colors.white.withOpacity(0.27)),
       margin: headerStyle.headerMargin,
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Column(
@@ -69,22 +65,33 @@ class CalendarHeader extends StatelessWidget {
             ),
           ),
           Row(
-            mainAxisSize: MainAxisSize.max,
             children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 18.0),
-                  child: headerTitleBuilder?.call(context, focusedMonth) ??
-                      GestureDetector(
-                        onTap: onHeaderTap,
-                        onLongPress: onHeaderLongPress,
-                        child: Text(
-                          text,
-                          style: headerStyle.titleTextStyle,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                child: GestureDetector(
+                  onTap: onHeaderTap,
+                  child: Container(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        headerTitleBuilder?.call(context, focusedMonth) ??
+                            Text(
+                              text,
+                              style: headerStyle.titleTextStyle,
+                            ),
+                        const SizedBox(
+                          width: 10,
                         ),
-                      ),
+                        Icon(
+                          Icons.arrow_drop_down_sharp,
+                          size: 24,
+                        )
+                      ],
+                    ),
+                  ),
                 ),
               ),
+              Spacer(),
               if (headerStyle.leftChevronVisible)
                 CustomIconButton(
                   icon: headerStyle.leftChevronIcon,

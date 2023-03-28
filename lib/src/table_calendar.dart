@@ -5,6 +5,7 @@ import 'dart:math';
 
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:month_year_picker/month_year_picker.dart';
 import 'package:simple_gesture_detector/simple_gesture_detector.dart';
 
 import 'customization/calendar_builders.dart';
@@ -458,9 +459,22 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
                 focusedMonth: value,
                 onLeftChevronTap: _onLeftChevronTap,
                 onRightChevronTap: _onRightChevronTap,
-                onHeaderTap: () => widget.onHeaderTapped?.call(value),
-                onHeaderLongPress: () =>
-                    widget.onHeaderLongPressed?.call(value),
+                onHeaderTap: () async {
+                  final selectedMonth = await showMonthYearPicker(
+                    context: context,
+                    initialDate: _focusedDay.value,
+                    firstDate: widget.firstDay,
+                    lastDate: widget.lastDay,
+
+                  );
+                  if (selectedMonth != null) {
+                    _pageController.jumpToPage(
+                      (selectedMonth.year - widget.firstDay.year) * 12 +
+                          selectedMonth.month -
+                          widget.firstDay.month,
+                    );
+                  }
+                },
                 headerStyle: widget.headerStyle,
                 availableCalendarFormats: widget.availableCalendarFormats,
                 calendarFormat: widget.calendarFormat,

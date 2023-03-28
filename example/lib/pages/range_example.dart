@@ -32,6 +32,20 @@ class _TableRangeExampleState extends State<TableRangeExample> {
           formatButtonVisible: false,
           titleCentered: true,
         ),
+        calendarStyle: CalendarStyle(
+          markerDecoration:
+              BoxDecoration(shape: BoxShape.circle, color: Colors.blue),
+          rangeStartDecoration: BoxDecoration(
+            color: Colors.blue,
+            borderRadius: BorderRadius.horizontal(
+                left: Radius.circular(60), right: Radius.zero),
+          ),
+          rangeEndDecoration: BoxDecoration(
+            color: Colors.blue,
+            borderRadius: BorderRadius.horizontal(
+                left: Radius.zero, right: Radius.circular(60)),
+          ),
+        ),
         firstDay: kFirstDay,
         lastDay: kLastDay,
         focusedDay: _focusedDay,

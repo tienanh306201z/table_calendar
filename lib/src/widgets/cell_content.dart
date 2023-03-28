@@ -89,8 +89,7 @@ class CellContent extends StatelessWidget {
     } else if (isRangeStart) {
       cell =
           calendarBuilders.rangeStartBuilder?.call(context, day, focusedDay) ??
-              AnimatedContainer(
-                duration: duration,
+              Container(
                 margin: margin,
                 padding: padding,
                 decoration: calendarStyle.rangeStartDecoration,
@@ -99,8 +98,7 @@ class CellContent extends StatelessWidget {
               );
     } else if (isRangeEnd) {
       cell = calendarBuilders.rangeEndBuilder?.call(context, day, focusedDay) ??
-          AnimatedContainer(
-            duration: duration,
+          Container(
             margin: margin,
             padding: padding,
             decoration: calendarStyle.rangeEndDecoration,

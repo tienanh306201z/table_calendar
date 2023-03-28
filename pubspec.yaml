@@ -13,6 +13,7 @@ dependencies:
 
   intl: ^0.17.0
   simple_gesture_detector: ^0.2.0
+  month_year_picker: 0.2.0+3
 
 dev_dependencies:
   flutter_test:
