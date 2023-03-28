@@ -338,13 +338,15 @@ class __MonthPickerState extends State<_MonthPicker> {
             ? onPrimaryColor
             : date.month == DateTime.now().month
                 ? primaryColor
-                : onSurfaceColor.withOpacity(0.8),
+                : (date.isBefore(_firstDate) || date.isAfter(_lastDate))
+                    ? onSurfaceColor.withOpacity(0.4)
+                    : onSurfaceColor.withOpacity(0.8),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.0),
         ),
       ),
       child: Text(
-        DateFormat.MMM().format(date).toUpperCase(),
+        DateFormat.MMM().format(date),
       ),
     );
   }

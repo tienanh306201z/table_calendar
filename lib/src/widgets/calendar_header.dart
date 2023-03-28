@@ -70,7 +70,7 @@ class CalendarHeader extends StatelessWidget {
                 onTap: onHeaderTap,
                 child: Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 18.0, vertical: 5),
+                      const EdgeInsets.symmetric(horizontal: 18.0, vertical: 10),
                   child: Container(
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
