@@ -3,9 +3,9 @@
 
 import 'dart:math';
 
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_month_picker/flutter_month_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:month_year_picker/month_year_picker.dart';
 import 'package:simple_gesture_detector/simple_gesture_detector.dart';
 
 import 'customization/calendar_builders.dart';
@@ -205,6 +205,8 @@ class TableCalendar<T> extends StatefulWidget {
   /// Called when the calendar is created. Exposes its PageController.
   final void Function(PageController pageController)? onCalendarCreated;
 
+  final ThemeData? monthPickerTheme;
+
   /// Creates a `TableCalendar` widget.
   TableCalendar({
     Key? key,
@@ -261,6 +263,7 @@ class TableCalendar<T> extends StatefulWidget {
     this.onPageChanged,
     this.onFormatChanged,
     this.onCalendarCreated,
+    this.monthPickerTheme,
   })  : assert(availableCalendarFormats.keys.contains(calendarFormat)),
         assert(availableCalendarFormats.length <= CalendarFormat.values.length),
         assert(weekendDays.isNotEmpty
@@ -454,40 +457,42 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
           ValueListenableBuilder<DateTime>(
             valueListenable: _focusedDay,
             builder: (context, value, _) {
-              return CalendarHeader(
-                headerTitleBuilder: widget.calendarBuilders.headerTitleBuilder,
-                focusedMonth: value,
-                onLeftChevronTap: _onLeftChevronTap,
-                onRightChevronTap: _onRightChevronTap,
-                onHeaderTap: () async {
-                  final selectedMonth = await showMonthYearPicker(
-                    context: context,
-                    initialDate: _focusedDay.value,
-                    firstDate: widget.firstDay,
-                    lastDate: widget.lastDay,
+              return Theme(
+                  data: widget.monthPickerTheme ?? ThemeData.light(),
+                  child: CalendarHeader(
+                    headerTitleBuilder:
+                        widget.calendarBuilders.headerTitleBuilder,
+                    focusedMonth: value,
+                    onLeftChevronTap: _onLeftChevronTap,
+                    onRightChevronTap: _onRightChevronTap,
+                    onHeaderTap: () async {
+                      final selectedMonth = await showMonthPicker(
+                        context: context,
+                        initialDate: _focusedDay.value,
+                        firstDate: widget.firstDay,
+                        lastDate: widget.lastDay,
+                      );
+                      if (selectedMonth != null) {
+                        _pageController.jumpToPage(
+                          (selectedMonth.year - widget.firstDay.year) * 12 +
+                              selectedMonth.month -
+                              widget.firstDay.month,
+                        );
+                      }
+                    },
+                    headerStyle: widget.headerStyle,
+                    availableCalendarFormats: widget.availableCalendarFormats,
+                    calendarFormat: widget.calendarFormat,
+                    locale: widget.locale,
+                    onFormatButtonTap: (format) {
+                      assert(
+                        widget.onFormatChanged != null,
+                        'Using `FormatButton` without providing `onFormatChanged` will have no effect.',
+                      );
 
-                  );
-                  if (selectedMonth != null) {
-                    _pageController.jumpToPage(
-                      (selectedMonth.year - widget.firstDay.year) * 12 +
-                          selectedMonth.month -
-                          widget.firstDay.month,
-                    );
-                  }
-                },
-                headerStyle: widget.headerStyle,
-                availableCalendarFormats: widget.availableCalendarFormats,
-                calendarFormat: widget.calendarFormat,
-                locale: widget.locale,
-                onFormatButtonTap: (format) {
-                  assert(
-                    widget.onFormatChanged != null,
-                    'Using `FormatButton` without providing `onFormatChanged` will have no effect.',
-                  );
-
-                  widget.onFormatChanged?.call(format);
-                },
-              );
+                      widget.onFormatChanged?.call(format);
+                    },
+                  ));
             },
           ),
         if (widget.headerVisible)

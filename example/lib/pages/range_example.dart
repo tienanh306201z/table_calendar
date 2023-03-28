@@ -84,6 +84,7 @@ class _TableRangeExampleState extends State<TableRangeExample> {
         onPageChanged: (focusedDay) {
           _focusedDay = focusedDay;
         },
+        monthPickerTheme: Theme.of(context).copyWith(primaryColor: Colors.red),
       ),
     );
   }
