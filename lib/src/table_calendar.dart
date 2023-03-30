@@ -464,42 +464,36 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
             valueListenable: _focusedDay,
             builder: (context, value, _) {
               return CalendarHeader(
-                headerTitleBuilder: widget.calendarBuilders.headerTitleBuilder,
-                focusedMonth: value,
-                onLeftChevronTap: _onLeftChevronTap,
-                onRightChevronTap: _onRightChevronTap,
-                onHeaderTap: () async {
-                  final selectedMonth = await showMonthPicker(
-                    context: context,
-                    initialDate: _focusedDay.value,
-                    firstDate: widget.firstDay,
-                    lastDate: widget.lastDay,
-                    primaryColor: widget.primaryColor,
-                    onPrimaryColor: widget.onPrimaryColor,
-                    surfaceColor: widget.surfaceColor,
-                    onSurfaceColor: widget.onSurfaceColor,
-                  );
-                  if (selectedMonth != null) {
+                  headerTitleBuilder:
+                      widget.calendarBuilders.headerTitleBuilder,
+                  focusedMonth: value,
+                  firstDate: widget.firstDay,
+                  lastDate: widget.lastDay,
+                  primaryColor: widget.primaryColor,
+                  onPrimaryColor: widget.onPrimaryColor,
+                  surfaceColor: widget.surfaceColor,
+                  onSurfaceColor: widget.onSurfaceColor,
+                  onLeftChevronTap: _onLeftChevronTap,
+                  onRightChevronTap: _onRightChevronTap,
+                  headerStyle: widget.headerStyle,
+                  availableCalendarFormats: widget.availableCalendarFormats,
+                  calendarFormat: widget.calendarFormat,
+                  locale: widget.locale,
+                  onFormatButtonTap: (format) {
+                    assert(
+                      widget.onFormatChanged != null,
+                      'Using `FormatButton` without providing `onFormatChanged` will have no effect.',
+                    );
+
+                    widget.onFormatChanged?.call(format);
+                  },
+                  setSelectedYear: (year) {
                     _pageController.jumpToPage(
-                      (selectedMonth.year - widget.firstDay.year) * 12 +
-                          selectedMonth.month -
+                      (year.year - widget.firstDay.year) * 12 +
+                          year.month -
                           widget.firstDay.month,
                     );
-                  }
-                },
-                headerStyle: widget.headerStyle,
-                availableCalendarFormats: widget.availableCalendarFormats,
-                calendarFormat: widget.calendarFormat,
-                locale: widget.locale,
-                onFormatButtonTap: (format) {
-                  assert(
-                    widget.onFormatChanged != null,
-                    'Using `FormatButton` without providing `onFormatChanged` will have no effect.',
-                  );
-
-                  widget.onFormatChanged?.call(format);
-                },
-              );
+                  });
             },
           ),
         if (widget.headerVisible)

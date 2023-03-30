@@ -2,24 +2,29 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:table_calendar/src/widgets/month_picker.dart';
 
 import '../../table_calendar.dart';
 import 'custom_icon_button.dart';
-import 'format_button.dart';
 
-class CalendarHeader extends StatelessWidget {
+class CalendarHeader extends StatefulWidget {
   final dynamic locale;
   final DateTime focusedMonth;
+  final DateTime firstDate;
+  final DateTime lastDate;
+  final Color primaryColor;
+  final Color onPrimaryColor;
+  final Color surfaceColor;
+  final Color onSurfaceColor;
   final CalendarFormat calendarFormat;
   final HeaderStyle headerStyle;
   final VoidCallback onLeftChevronTap;
   final VoidCallback onRightChevronTap;
-  final VoidCallback onHeaderTap;
   final ValueChanged<CalendarFormat> onFormatButtonTap;
   final Map<CalendarFormat, String> availableCalendarFormats;
   final DayBuilder? headerTitleBuilder;
+  final Function(DateTime) setSelectedYear;
 
   const CalendarHeader({
     Key? key,
@@ -29,22 +34,45 @@ class CalendarHeader extends StatelessWidget {
     required this.headerStyle,
     required this.onLeftChevronTap,
     required this.onRightChevronTap,
-    required this.onHeaderTap,
     required this.onFormatButtonTap,
     required this.availableCalendarFormats,
     this.headerTitleBuilder,
+    required this.firstDate,
+    required this.lastDate,
+    required this.primaryColor,
+    required this.onPrimaryColor,
+    required this.surfaceColor,
+    required this.onSurfaceColor, required this.setSelectedYear,
   }) : super(key: key);
 
   @override
+  State<CalendarHeader> createState() => _CalendarHeaderState();
+}
+
+class _CalendarHeaderState extends State<CalendarHeader> {
+  var _isYearSelection = false;
+  late int _yearDisplayPage;
+  late final PageController _yearPageController;
+
+  @override
+  void initState() {
+    _yearDisplayPage = widget.focusedMonth.year ~/ 15;
+    _yearPageController = PageController(initialPage: _yearDisplayPage);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final text = headerStyle.titleTextFormatter?.call(focusedMonth, locale) ??
-        DateFormat.yMMMM(locale).format(focusedMonth);
+    final text = widget.headerStyle.titleTextFormatter
+            ?.call(widget.focusedMonth, widget.locale) ??
+        DateFormat.yMMMM(widget.locale).format(widget.focusedMonth);
 
     return Container(
       decoration: BoxDecoration(color: Colors.white.withOpacity(0.27)),
-      margin: headerStyle.headerMargin,
+      margin: widget.headerStyle.headerMargin,
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           LayoutBuilder(
             builder: (_, constraint) => Row(
@@ -57,7 +85,7 @@ class CalendarHeader extends StatelessWidget {
                     alignment: Alignment.center,
                     child: Text(
                       _getWeekdaysFirstLetterByNumber(index),
-                      style: headerStyle.weekDaysTextStyle,
+                      style: widget.headerStyle.weekDaysTextStyle,
                     ),
                   ),
                 ),
@@ -67,24 +95,32 @@ class CalendarHeader extends StatelessWidget {
           Row(
             children: [
               GestureDetector(
-                onTap: onHeaderTap,
+                onTap: () {
+                  // onHeaderTap.call();
+                  setState(() {
+                    _isYearSelection = !_isYearSelection;
+                  });
+                },
                 child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 18.0, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 18.0, vertical: 10),
                   child: Container(
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        headerTitleBuilder?.call(context, focusedMonth) ??
+                        widget.headerTitleBuilder
+                                ?.call(context, widget.focusedMonth) ??
                             Text(
                               text,
-                              style: headerStyle.titleTextStyle,
+                              style: widget.headerStyle.titleTextStyle,
                             ),
                         const SizedBox(
                           width: 10,
                         ),
                         Icon(
-                          Icons.arrow_drop_down_sharp,
+                          _isYearSelection
+                              ? Icons.arrow_drop_up_sharp
+                              : Icons.arrow_drop_down_sharp,
                           size: 24,
                         )
                       ],
@@ -93,36 +129,59 @@ class CalendarHeader extends StatelessWidget {
                 ),
               ),
               Spacer(),
-              if (headerStyle.leftChevronVisible)
+              if (widget.headerStyle.leftChevronVisible)
                 CustomIconButton(
-                  icon: headerStyle.leftChevronIcon,
-                  onTap: onLeftChevronTap,
-                  margin: headerStyle.leftChevronMargin,
-                  padding: headerStyle.leftChevronPadding,
+                  icon: widget.headerStyle.leftChevronIcon,
+                  onTap: () {
+                    if (_isYearSelection) {
+                      _yearPageController.animateToPage(
+                        _yearDisplayPage - 1,
+                        duration: const Duration(milliseconds: 400),
+                        curve: Curves.easeIn,
+                      );
+                    } else {
+                      widget.onLeftChevronTap.call();
+                    }
+                  },
+                  margin: widget.headerStyle.leftChevronMargin,
+                  padding: widget.headerStyle.leftChevronPadding,
                 ),
-              if (headerStyle.formatButtonVisible &&
-                  availableCalendarFormats.length > 1)
-                Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
-                  child: FormatButton(
-                    onTap: onFormatButtonTap,
-                    availableCalendarFormats: availableCalendarFormats,
-                    calendarFormat: calendarFormat,
-                    decoration: headerStyle.formatButtonDecoration,
-                    padding: headerStyle.formatButtonPadding,
-                    textStyle: headerStyle.formatButtonTextStyle,
-                    showsNextFormat: headerStyle.formatButtonShowsNext,
-                  ),
-                ),
-              if (headerStyle.rightChevronVisible)
+              if (widget.headerStyle.rightChevronVisible)
                 CustomIconButton(
-                  icon: headerStyle.rightChevronIcon,
-                  onTap: onRightChevronTap,
-                  margin: headerStyle.rightChevronMargin,
-                  padding: headerStyle.rightChevronPadding,
+                  icon: widget.headerStyle.rightChevronIcon,
+                  onTap: () {
+                    if (_isYearSelection) {
+                      _yearPageController.animateToPage(
+                        _yearDisplayPage + 1,
+                        duration: const Duration(milliseconds: 400),
+                        curve: Curves.easeIn,
+                      );
+                    } else {
+                      widget.onRightChevronTap.call();
+                    }
+                  },
+                  margin: widget.headerStyle.rightChevronMargin,
+                  padding: widget.headerStyle.rightChevronPadding,
                 ),
             ],
           ),
+          if (_isYearSelection)
+            Divider(thickness: 2, color: Colors.grey.withOpacity(0.3),),
+          if (_isYearSelection)
+            MonthPicker(
+              yearPageController: _yearPageController,
+              initialDate: widget.focusedMonth,
+              firstDate: widget.firstDate,
+              lastDate: widget.lastDate,
+              primaryColor: widget.primaryColor,
+              onPrimaryColor: widget.onPrimaryColor,
+              surfaceColor: widget.surfaceColor,
+              onSurfaceColor: widget.onSurfaceColor,
+              setYearDisplayPage: (page) {
+                setState(() => _yearDisplayPage = page);
+              },
+              setSelectedYear: widget.setSelectedYear
+            )
         ],
       ),
     );

@@ -1,33 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-Future<DateTime?> showMonthPicker({
-  required BuildContext context,
-  required DateTime initialDate,
-  required DateTime firstDate,
-  required DateTime lastDate,
-  required Color primaryColor,
-  required Color onPrimaryColor,
-  required Color surfaceColor,
-  required Color onSurfaceColor,
-}) async {
-  return await showDialog(
-    context: context,
-    builder: (context) {
-      return _MonthPicker(
-        initialDate: initialDate,
-        firstDate: firstDate,
-        lastDate: lastDate,
-        primaryColor: primaryColor,
-        onPrimaryColor: onPrimaryColor,
-        surfaceColor: surfaceColor,
-        onSurfaceColor: onSurfaceColor,
-      );
-    },
-  );
-}
-
-class _MonthPicker extends StatefulWidget {
+class MonthPicker extends StatefulWidget {
   final DateTime initialDate;
   final DateTime firstDate;
   final DateTime lastDate;
@@ -35,8 +9,11 @@ class _MonthPicker extends StatefulWidget {
   final Color onPrimaryColor;
   final Color surfaceColor;
   final Color onSurfaceColor;
+  final PageController yearPageController;
+  final Function(int) setYearDisplayPage;
+  final Function(DateTime) setSelectedYear;
 
-  const _MonthPicker({
+  const MonthPicker({
     Key? key,
     required this.initialDate,
     required this.firstDate,
@@ -45,18 +22,18 @@ class _MonthPicker extends StatefulWidget {
     required this.onPrimaryColor,
     required this.surfaceColor,
     required this.onSurfaceColor,
+    required this.yearPageController,
+    required this.setYearDisplayPage,
+    required this.setSelectedYear,
   }) : super(key: key);
 
   @override
-  State<_MonthPicker> createState() => __MonthPickerState();
+  State<MonthPicker> createState() => __MonthPickerState();
 }
 
-class __MonthPickerState extends State<_MonthPicker> {
+class __MonthPickerState extends State<MonthPicker> {
   final _pageViewKey = GlobalKey();
-  late final PageController _pageController;
-  late int _displayedPage;
   late DateTime _selectedDate;
-  bool _isYearSelection = false;
   late final DateTime _firstDate;
   late final DateTime _lastDate;
 
@@ -66,8 +43,6 @@ class __MonthPickerState extends State<_MonthPicker> {
     _firstDate = DateTime(widget.firstDate.year, widget.firstDate.month);
     _lastDate = DateTime(widget.lastDate.year, widget.lastDate.month);
     _selectedDate = DateTime(widget.initialDate.year, widget.initialDate.month);
-    _displayedPage = _selectedDate.year;
-    _pageController = PageController(initialPage: _displayedPage);
   }
 
   @override
@@ -80,146 +55,7 @@ class __MonthPickerState extends State<_MonthPicker> {
       widget.surfaceColor,
       widget.onSurfaceColor,
     );
-
-    final content = Material(
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(30.0)),
-      ),
-      color: widget.surfaceColor,
-      child: Column(
-        children: [
-          pager,
-          Container(height: 24.0),
-          _buildButtonBar(context),
-        ],
-      ),
-    );
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Builder(
-            builder: (context) {
-              return MediaQuery.of(context).orientation == Orientation.portrait
-                  ? IntrinsicWidth(
-                      child: Column(
-                      children: [
-                        IntrinsicHeight(
-                          child: _buildHeader(
-                            theme,
-                            widget.primaryColor,
-                            widget.onPrimaryColor,
-                            widget.surfaceColor,
-                            widget.onSurfaceColor,
-                          ),
-                        ),
-                        const SizedBox(height: 8.0),
-                        content,
-                      ],
-                    ))
-                  : IntrinsicHeight(
-                      child: Row(children: [
-                        _buildHeader(
-                          theme,
-                          widget.primaryColor,
-                          widget.onPrimaryColor,
-                          widget.surfaceColor,
-                          widget.onSurfaceColor,
-                        ),
-                        const SizedBox(width: 8.0),
-                        content,
-                      ]),
-                    );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  _buildHeader(
-    ThemeData theme,
-    Color primaryColor,
-    Color onPrimaryColor,
-    Color surfaceColor,
-    Color onSurfaceColor,
-  ) {
-    return Material(
-      color: primaryColor,
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(30.0))),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Center(
-              child: Text(
-                DateFormat.yMMM().format(_selectedDate),
-                style: theme.primaryTextTheme.subtitle1
-                        ?.copyWith(color: onPrimaryColor) ??
-                    TextStyle(color: onPrimaryColor),
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                IconButton(
-                  icon: Icon(
-                    Icons.keyboard_arrow_left,
-                    color: onPrimaryColor,
-                  ),
-                  onPressed: () => _pageController.animateToPage(
-                    _displayedPage - 1,
-                    duration: const Duration(milliseconds: 400),
-                    curve: Curves.easeIn,
-                  ),
-                ),
-                DefaultTextStyle(
-                  style: theme.primaryTextTheme.headline5!
-                      .copyWith(color: onPrimaryColor),
-                  child: (_isYearSelection)
-                      ? Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Text(DateFormat.y().format(
-                              DateTime(_displayedPage * 12),
-                            )),
-                            const Text(' - '),
-                            Text(DateFormat.y().format(
-                              DateTime(_displayedPage * 12 + 11),
-                            )),
-                          ],
-                        )
-                      : GestureDetector(
-                          onTap: () {
-                            setState(() => _isYearSelection = true);
-                            _pageController.jumpToPage(_displayedPage ~/ 12);
-                          },
-                          child: Text(
-                            DateFormat.y().format(DateTime(_displayedPage)),
-                          ),
-                        ),
-                ),
-                IconButton(
-                  icon: Icon(
-                    Icons.keyboard_arrow_right,
-                    color: onPrimaryColor,
-                  ),
-                  onPressed: () => _pageController.animateToPage(
-                    _displayedPage + 1,
-                    duration: const Duration(milliseconds: 400),
-                    curve: Curves.easeIn,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
+    return pager;
   }
 
   _buildPager(
@@ -230,41 +66,28 @@ class __MonthPickerState extends State<_MonthPicker> {
     Color onSurfaceColor,
   ) {
     return SizedBox(
-      height: 220,
-      width: 300,
+      width: MediaQuery.of(context).size.width * 0.8,
+      height: 300,
       child: PageView.builder(
         key: _pageViewKey,
-        controller: _pageController,
+        controller: widget.yearPageController,
         scrollDirection: Axis.horizontal,
-        onPageChanged: (index) => setState(() => _displayedPage = index),
-        pageSnapping: !_isYearSelection,
+        onPageChanged: (index) => widget.setYearDisplayPage(index),
+        pageSnapping: true,
         itemBuilder: (context, page) {
-          return GridView.count(
-            crossAxisCount: 4,
-            padding: const EdgeInsets.all(12.0),
-            physics: const NeverScrollableScrollPhysics(),
-            children: _isYearSelection
-                ? List<int>.generate(12, (i) => page * 12 + i)
-                    .map(
-                      (year) => Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: _getYearButton(
-                          year,
-                          colorScheme,
-                          widget.primaryColor,
-                          widget.onPrimaryColor,
-                          widget.surfaceColor,
-                          widget.onSurfaceColor,
-                        ),
-                      ),
-                    )
-                    .toList()
-                : List<int>.generate(12, (i) => i + 1)
-                    .map((month) => DateTime(page, month))
+          return Center(
+            child: GridView.count(
+                shrinkWrap: true,
+                crossAxisCount: 3,
+                childAspectRatio: 2.5,
+                mainAxisSpacing: 3,
+                physics: const NeverScrollableScrollPhysics(),
+                children: List<int>.generate(15, (i) => page * 15 + i)
+                    .map((year) => DateTime(year, _selectedDate.month))
                     .map(
                       (date) => Padding(
                         padding: const EdgeInsets.all(4.0),
-                        child: _getMonthButton(
+                        child: _getYearButton(
                           date,
                           colorScheme,
                           widget.primaryColor,
@@ -274,7 +97,7 @@ class __MonthPickerState extends State<_MonthPicker> {
                         ),
                       ),
                     )
-                    .toList(),
+                    .toList()),
           );
         },
       ),
@@ -282,39 +105,6 @@ class __MonthPickerState extends State<_MonthPicker> {
   }
 
   _getYearButton(
-    int year,
-    ColorScheme colorScheme,
-    Color primaryColor,
-    Color onPrimaryColor,
-    Color surfaceColor,
-    Color onSurfaceColor,
-  ) {
-    bool isSelected = year == _selectedDate.year;
-    return TextButton(
-      onPressed: () => setState(
-        () {
-          _pageController.jumpToPage(year);
-          setState(() => _isYearSelection = false);
-        },
-      ),
-      style: TextButton.styleFrom(
-        backgroundColor: isSelected ? primaryColor : null,
-        primary: isSelected
-            ? onPrimaryColor
-            : year == DateTime.now().year
-                ? primaryColor
-                : onSurfaceColor.withOpacity(0.8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.0),
-        ),
-      ),
-      child: Text(
-        DateFormat.y().format(DateTime(year)),
-      ),
-    );
-  }
-
-  _getMonthButton(
     DateTime date,
     ColorScheme colorScheme,
     Color primaryColor,
@@ -328,50 +118,37 @@ class __MonthPickerState extends State<_MonthPicker> {
     final int isLastDate = _lastDate.compareTo(date);
 
     VoidCallback? callback = (isFirstDate <= 0) && (isLastDate >= 0)
-        ? () => setState(() => _selectedDate = DateTime(date.year, date.month))
+        ? () => () {
+              setState(() => _selectedDate = DateTime(date.year, date.month));
+              widget.setSelectedYear(_selectedDate);
+              print("Hello");
+            }
         : null;
+
     return TextButton(
-      onPressed: callback,
+      onPressed: () {
+        if (widget.firstDate.isAfter(date) || widget.lastDate.isBefore(date))
+          return;
+        setState(() => _selectedDate = DateTime(date.year, date.month));
+        widget.setSelectedYear(_selectedDate);
+        print("Hello");
+      },
       style: TextButton.styleFrom(
         backgroundColor: isSelected ? primaryColor : null,
-        primary: isSelected
-            ? onPrimaryColor
-            : date.month == DateTime.now().month
-                ? primaryColor
-                : (date.isBefore(_firstDate) || date.isAfter(_lastDate))
-                    ? onSurfaceColor.withOpacity(0.4)
-                    : onSurfaceColor.withOpacity(0.8),
+        primary:
+            widget.firstDate.isAfter(date) || widget.lastDate.isBefore(date)
+                ? Colors.grey
+                : isSelected
+                    ? onPrimaryColor
+                    : date.year == DateTime.now().year
+                        ? primaryColor
+                        : onSurfaceColor.withOpacity(0.8),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.0),
         ),
       ),
       child: Text(
-        DateFormat.MMM().format(date),
-      ),
-    );
-  }
-
-  _buildButtonBar(BuildContext context) {
-    final localizations = MaterialLocalizations.of(context);
-    return ButtonTheme(
-      child: ButtonBar(
-        alignment: MainAxisAlignment.spaceBetween,
-        children: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, null),
-            child: Text(
-              localizations.cancelButtonLabel,
-              style: TextStyle(color: widget.primaryColor),
-            ),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, _selectedDate),
-            child: Text(
-              localizations.okButtonLabel,
-              style: TextStyle(color: widget.primaryColor),
-            ),
-          ),
-        ],
+        DateFormat.y().format(DateTime(date.year)),
       ),
     );
   }

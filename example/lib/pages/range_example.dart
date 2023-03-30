@@ -27,63 +27,65 @@ class _TableRangeExampleState extends State<TableRangeExample> {
       appBar: AppBar(
         title: Text('TableCalendar - Range'),
       ),
-      body: TableCalendar(
-        headerStyle: HeaderStyle(
-          formatButtonVisible: false,
-          titleCentered: true,
-        ),
-        calendarStyle: CalendarStyle(
-          markerDecoration:
-              BoxDecoration(shape: BoxShape.circle, color: Colors.blue),
-          rangeStartDecoration: BoxDecoration(
-            color: Colors.blue,
-            borderRadius: BorderRadius.horizontal(
-                left: Radius.circular(60), right: Radius.zero),
+      body: SingleChildScrollView(
+        child: TableCalendar(
+          headerStyle: HeaderStyle(
+            formatButtonVisible: false,
+            titleCentered: true,
           ),
-          rangeEndDecoration: BoxDecoration(
-            color: Colors.blue,
-            borderRadius: BorderRadius.horizontal(
-                left: Radius.zero, right: Radius.circular(60)),
+          calendarStyle: CalendarStyle(
+            markerDecoration:
+                BoxDecoration(shape: BoxShape.circle, color: Colors.blue),
+            rangeStartDecoration: BoxDecoration(
+              color: Colors.blue,
+              borderRadius: BorderRadius.horizontal(
+                  left: Radius.circular(60), right: Radius.zero),
+            ),
+            rangeEndDecoration: BoxDecoration(
+              color: Colors.blue,
+              borderRadius: BorderRadius.horizontal(
+                  left: Radius.zero, right: Radius.circular(60)),
+            ),
           ),
-        ),
-        firstDay: kFirstDay,
-        lastDay: kLastDay,
-        focusedDay: _focusedDay,
-        selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-        rangeStartDay: _rangeStart,
-        rangeEndDay: _rangeEnd,
-        calendarFormat: _calendarFormat,
-        rangeSelectionMode: _rangeSelectionMode,
-        onDaySelected: (selectedDay, focusedDay) {
-          if (!isSameDay(_selectedDay, selectedDay)) {
+          firstDay: kFirstDay,
+          lastDay: kLastDay,
+          focusedDay: _focusedDay,
+          selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+          rangeStartDay: _rangeStart,
+          rangeEndDay: _rangeEnd,
+          calendarFormat: _calendarFormat,
+          rangeSelectionMode: _rangeSelectionMode,
+          onDaySelected: (selectedDay, focusedDay) {
+            if (!isSameDay(_selectedDay, selectedDay)) {
+              setState(() {
+                _selectedDay = selectedDay;
+                _focusedDay = focusedDay;
+                _rangeStart = null; // Important to clean those
+                _rangeEnd = null;
+                _rangeSelectionMode = RangeSelectionMode.toggledOff;
+              });
+            }
+          },
+          onRangeSelected: (start, end, focusedDay) {
             setState(() {
-              _selectedDay = selectedDay;
+              _selectedDay = null;
               _focusedDay = focusedDay;
-              _rangeStart = null; // Important to clean those
-              _rangeEnd = null;
-              _rangeSelectionMode = RangeSelectionMode.toggledOff;
+              _rangeStart = start;
+              _rangeEnd = end;
+              _rangeSelectionMode = RangeSelectionMode.toggledOn;
             });
-          }
-        },
-        onRangeSelected: (start, end, focusedDay) {
-          setState(() {
-            _selectedDay = null;
+          },
+          onFormatChanged: (format) {
+            if (_calendarFormat != format) {
+              setState(() {
+                _calendarFormat = format;
+              });
+            }
+          },
+          onPageChanged: (focusedDay) {
             _focusedDay = focusedDay;
-            _rangeStart = start;
-            _rangeEnd = end;
-            _rangeSelectionMode = RangeSelectionMode.toggledOn;
-          });
-        },
-        onFormatChanged: (format) {
-          if (_calendarFormat != format) {
-            setState(() {
-              _calendarFormat = format;
-            });
-          }
-        },
-        onPageChanged: (focusedDay) {
-          _focusedDay = focusedDay;
-        },
+          },
+        ),
       ),
     );
   }
