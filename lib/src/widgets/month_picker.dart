@@ -114,35 +114,25 @@ class __MonthPickerState extends State<MonthPicker> {
   ) {
     bool isSelected =
         date.month == _selectedDate.month && date.year == _selectedDate.year;
-    final int isFirstDate = _firstDate.compareTo(date);
-    final int isLastDate = _lastDate.compareTo(date);
-
-    VoidCallback? callback = (isFirstDate <= 0) && (isLastDate >= 0)
-        ? () => () {
-              setState(() => _selectedDate = DateTime(date.year, date.month));
-              widget.setSelectedYear(_selectedDate);
-              print("Hello");
-            }
-        : null;
 
     return TextButton(
       onPressed: () {
-        if (widget.firstDate.isAfter(date) || widget.lastDate.isBefore(date))
-          return;
+        if (widget.firstDate.year > date.year ||
+            widget.lastDate.year < date.year) return;
         setState(() => _selectedDate = DateTime(date.year, date.month));
         widget.setSelectedYear(_selectedDate);
         print("Hello");
       },
       style: TextButton.styleFrom(
         backgroundColor: isSelected ? primaryColor : null,
-        primary:
-            widget.firstDate.isAfter(date) || widget.lastDate.isBefore(date)
-                ? Colors.grey
-                : isSelected
-                    ? onPrimaryColor
-                    : date.year == DateTime.now().year
-                        ? primaryColor
-                        : onSurfaceColor.withOpacity(0.8),
+        primary: widget.firstDate.year > date.year ||
+                widget.lastDate.year < date.year
+            ? Colors.grey
+            : isSelected
+                ? onPrimaryColor
+                : date.year == DateTime.now().year
+                    ? primaryColor
+                    : onSurfaceColor.withOpacity(0.8),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.0),
         ),
