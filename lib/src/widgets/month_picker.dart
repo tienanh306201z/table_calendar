@@ -134,11 +134,12 @@ class __MonthPickerState extends State<MonthPicker> {
                     ? primaryColor
                     : onSurfaceColor.withOpacity(0.8),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.0),
+          borderRadius: BorderRadius.circular(8),
         ),
       ),
       child: Text(
         DateFormat.y().format(DateTime(date.year)),
+        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
       ),
     );
   }
