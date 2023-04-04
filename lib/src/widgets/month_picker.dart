@@ -79,7 +79,7 @@ class __MonthPickerState extends State<MonthPicker> {
             child: GridView.count(
                 shrinkWrap: true,
                 crossAxisCount: 3,
-                childAspectRatio: 2.5,
+                childAspectRatio: 2,
                 mainAxisSpacing: 3,
                 physics: const NeverScrollableScrollPhysics(),
                 children: List<int>.generate(15, (i) => page * 15 + i)
