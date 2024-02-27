@@ -125,7 +125,7 @@ class __MonthPickerState extends State<MonthPicker> {
       },
       style: TextButton.styleFrom(
         backgroundColor: isSelected ? primaryColor : null,
-        primary: widget.firstDate.year > date.year ||
+        foregroundColor: widget.firstDate.year > date.year ||
                 widget.lastDate.year < date.year
             ? Colors.grey
             : isSelected
