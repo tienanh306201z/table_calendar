@@ -3,12 +3,9 @@
 
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:simple_gesture_detector/simple_gesture_detector.dart';
-import 'package:table_calendar/src/widgets/month_picker.dart';
 
 import 'customization/calendar_builders.dart';
 import 'customization/calendar_style.dart';
@@ -466,11 +463,16 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
             Expanded(
                 child: Padding(
                     padding: const EdgeInsets.only(left: 10),
-                    child: Text(
-                      'May 2024',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
+                    child: ValueListenableBuilder<DateTime>(
+                      valueListenable: _focusedDay,
+                      builder: (_, value, __) => Text(
+                        widget.headerStyle.titleTextFormatter
+                            ?.call(value, widget.locale) ??
+                            DateFormat.yMMMM('en').format(value),
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ))),
             IconButton(
@@ -678,7 +680,7 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
             rangeHighlight = Center(
               child: Container(
                 margin: EdgeInsetsDirectional.only(
-                  start: isRangeStart ? constraints.maxWidth * 0.5 : 0.0,
+                  start: isRangeStart ? constraints.maxWidth * 0.9 : 0.0,
                   end: isRangeEnd ? constraints.maxWidth * 0.5 : 0.0,
                 ),
                 height:

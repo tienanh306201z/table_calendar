@@ -88,7 +88,8 @@ class HeaderStyle {
     this.formatButtonShowsNext = true,
     this.titleTextFormatter,
     this.titleTextStyle = const TextStyle(fontSize: 17.0),
-    this.weekDaysTextStyle = const TextStyle(fontSize: 14.0),
+    this.weekDaysTextStyle = const TextStyle(
+        fontSize: 15, color: Colors.grey, fontWeight: FontWeight.w500),
     this.formatButtonTextStyle = const TextStyle(fontSize: 14.0),
     this.formatButtonDecoration = const BoxDecoration(
       border: const Border.fromBorderSide(BorderSide()),
