@@ -13,8 +13,9 @@ class TableRangeExample extends StatefulWidget {
 
 class _TableRangeExampleState extends State<TableRangeExample> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
-  RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
-      .toggledOn; // Can be toggled on/off by longpressing a date
+  RangeSelectionMode _rangeSelectionMode = RangeSelectionMode.toggledOn;
+
+  // Can be toggled on/off by long pressing a date
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   DateTime? _rangeStart;
@@ -23,9 +24,9 @@ class _TableRangeExampleState extends State<TableRangeExample> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFE3DBD2),
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('TableCalendar - Range'),
+        title: Text('TableCalendar - Range')
       ),
       body: SingleChildScrollView(
         child: TableCalendar(
@@ -34,18 +35,33 @@ class _TableRangeExampleState extends State<TableRangeExample> {
             titleCentered: true,
           ),
           calendarStyle: CalendarStyle(
-            markerDecoration:
-                BoxDecoration(shape: BoxShape.circle, color: Colors.blue),
+            // withinRangeTextStyle: TextStyle(
+            //   fontSize: 16,
+            //   color: Color(0xFFFFBA5A),
+            // ),
+            // rangeStartTextStyle: TextStyle(
+            //   fontSize: 16,
+            //   color: Color(0xFFFFBA5A),
+            // ),
+            // rangeEndTextStyle: TextStyle(
+            //   fontSize: 16,
+            //   color: Color(0xFFFFBA5A),
+            // ),
+            rangeHighlightColor: const Color(0xFFFFBA5A).withOpacity(0.2),
             rangeStartDecoration: BoxDecoration(
-              color: Colors.blue,
+              color: Color(0xFFFFBA5A).withOpacity(0.2),
               borderRadius: BorderRadius.horizontal(
-                  left: Radius.circular(60), right: Radius.zero),
+                left: Radius.circular(60),
+                right: Radius.zero,
+              ),
             ),
-            rangeEndDecoration: BoxDecoration(
-              color: Colors.blue,
-              borderRadius: BorderRadius.horizontal(
-                  left: Radius.zero, right: Radius.circular(60)),
-            ),
+            // rangeEndDecoration: BoxDecoration(
+            //   color: Color(0xFFFFBA5A).withOpacity(0.2),
+            //   borderRadius: BorderRadius.horizontal(
+            //     left: Radius.zero,
+            //     right: Radius.circular(60),
+            //   ),
+            // ),
           ),
           firstDay: kFirstDay,
           lastDay: kLastDay,

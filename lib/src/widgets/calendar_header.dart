@@ -85,7 +85,7 @@ class _CalendarHeaderState extends State<CalendarHeader> {
                     height: constraint.maxWidth / 7,
                     alignment: Alignment.center,
                     child: Text(
-                      _getWeekdaysFirstLetterByNumber(index),
+                      _getWeekdaysAbbreviationByNumber(index),
                       style: widget.headerStyle.weekDaysTextStyle,
                     ),
                   ),
@@ -93,83 +93,81 @@ class _CalendarHeaderState extends State<CalendarHeader> {
               ],
             ),
           ),
-          Row(
-            children: [
-              Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    // onHeaderTap.call();
-                    setState(() {
-                      _isYearSelection = !_isYearSelection;
-                    });
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 18.0, vertical: 10),
-                    child: Container(
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          widget.headerTitleBuilder
-                                  ?.call(context, widget.focusedMonth) ??
-                              Text(
-                                text,
-                                style: widget.headerStyle.titleTextStyle,
-                              ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Icon(
-                            _isYearSelection
-                                ? Icons.arrow_drop_up_sharp
-                                : Icons.arrow_drop_down_sharp,
-                            size: 24,
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              if (widget.headerStyle.leftChevronVisible)
-                CustomIconButton(
-                  icon: widget.headerStyle.leftChevronIcon,
-                  onTap: () {
-                    if (_isYearSelection) {
-                      _yearPageController.animateToPage(
-                        _yearDisplayPage - 1,
-                        duration: const Duration(milliseconds: 400),
-                        curve: Curves.easeIn,
-                      );
-                    } else {
-                      widget.onLeftChevronTap.call();
-                    }
-                  },
-                  margin: widget.headerStyle.leftChevronMargin,
-                  padding: widget.headerStyle.leftChevronPadding,
-                ),
-              if (widget.headerStyle.rightChevronVisible)
-                CustomIconButton(
-                  icon: widget.headerStyle.rightChevronIcon,
-                  onTap: () {
-                    if (_isYearSelection) {
-                      _yearPageController.animateToPage(
-                        _yearDisplayPage + 1,
-                        duration: const Duration(milliseconds: 400),
-                        curve: Curves.easeIn,
-                      );
-                    } else {
-                      widget.onRightChevronTap.call();
-                    }
-                  },
-                  margin: widget.headerStyle.rightChevronMargin,
-                  padding: widget.headerStyle.rightChevronPadding,
-                ),
-            ],
-          ),
+          // Row(
+          //   children: [
+          //     Expanded(
+          //       child: GestureDetector(
+          //         onTap: () {
+          //           // onHeaderTap.call();
+          //           setState(() {
+          //             _isYearSelection = !_isYearSelection;
+          //           });
+          //         },
+          //         child: Padding(
+          //           padding: const EdgeInsets.symmetric(
+          //               horizontal: 18.0, vertical: 10),
+          //           child: Container(
+          //             child: Row(
+          //               mainAxisSize: MainAxisSize.min,
+          //               children: [
+          //                 widget.headerTitleBuilder
+          //                         ?.call(context, widget.focusedMonth) ??
+          //                     Text(
+          //                       text,
+          //                       style: widget.headerStyle.titleTextStyle,
+          //                     ),
+          //                 const SizedBox(width: 10),
+          //                 Icon(
+          //                   _isYearSelection
+          //                       ? Icons.arrow_drop_up_sharp
+          //                       : Icons.arrow_drop_down_sharp,
+          //                   size: 24,
+          //                 )
+          //               ],
+          //             ),
+          //           ),
+          //         ),
+          //       ),
+          //     ),
+          //     SizedBox(
+          //       width: 10,
+          //     ),
+          //     if (widget.headerStyle.leftChevronVisible)
+          //       CustomIconButton(
+          //         icon: widget.headerStyle.leftChevronIcon,
+          //         onTap: () {
+          //           if (_isYearSelection) {
+          //             _yearPageController.animateToPage(
+          //               _yearDisplayPage - 1,
+          //               duration: const Duration(milliseconds: 400),
+          //               curve: Curves.easeIn,
+          //             );
+          //           } else {
+          //             widget.onLeftChevronTap.call();
+          //           }
+          //         },
+          //         margin: widget.headerStyle.leftChevronMargin,
+          //         padding: widget.headerStyle.leftChevronPadding,
+          //       ),
+          //     if (widget.headerStyle.rightChevronVisible)
+          //       CustomIconButton(
+          //         icon: widget.headerStyle.rightChevronIcon,
+          //         onTap: () {
+          //           if (_isYearSelection) {
+          //             _yearPageController.animateToPage(
+          //               _yearDisplayPage + 1,
+          //               duration: const Duration(milliseconds: 400),
+          //               curve: Curves.easeIn,
+          //             );
+          //           } else {
+          //             widget.onRightChevronTap.call();
+          //           }
+          //         },
+          //         margin: widget.headerStyle.rightChevronMargin,
+          //         padding: widget.headerStyle.rightChevronPadding,
+          //       ),
+          //   ],
+          // ),
           if (_isYearSelection)
             Divider(
               thickness: 2,
@@ -194,22 +192,22 @@ class _CalendarHeaderState extends State<CalendarHeader> {
     );
   }
 
-  String _getWeekdaysFirstLetterByNumber(int number) {
+  String _getWeekdaysAbbreviationByNumber(int number) {
     switch (number) {
       case 0:
-        return 'S';
+        return 'SUN';
       case 1:
-        return 'M';
+        return 'MON';
       case 2:
-        return 'T';
+        return 'TUE';
       case 3:
-        return 'W';
+        return 'WED';
       case 4:
-        return 'T';
+        return 'THU';
       case 5:
-        return 'F';
+        return 'FRI';
       case 6:
-        return 'S';
+        return 'SAT';
       default:
         return '';
     }

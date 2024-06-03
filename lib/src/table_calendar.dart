@@ -3,7 +3,9 @@
 
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:simple_gesture_detector/simple_gesture_detector.dart';
 import 'package:table_calendar/src/widgets/month_picker.dart';
@@ -266,7 +268,7 @@ class TableCalendar<T> extends StatefulWidget {
     this.onPageChanged,
     this.onFormatChanged,
     this.onCalendarCreated,
-    this.primaryColor = Colors.blue,
+    this.primaryColor = const Color(0xFFFFAB33),
     this.onPrimaryColor = Colors.white,
     this.surfaceColor = Colors.white,
     this.onSurfaceColor = Colors.black,
@@ -459,136 +461,189 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if (widget.headerVisible)
-          ValueListenableBuilder<DateTime>(
-            valueListenable: _focusedDay,
-            builder: (context, value, _) {
-              return CalendarHeader(
-                  headerTitleBuilder:
-                      widget.calendarBuilders.headerTitleBuilder,
-                  focusedMonth: value,
-                  firstDate: widget.firstDay,
-                  lastDate: widget.lastDay,
-                  primaryColor: widget.primaryColor,
-                  onPrimaryColor: widget.onPrimaryColor,
-                  surfaceColor: widget.surfaceColor,
-                  onSurfaceColor: widget.onSurfaceColor,
-                  onLeftChevronTap: _onLeftChevronTap,
-                  onRightChevronTap: _onRightChevronTap,
-                  headerStyle: widget.headerStyle,
-                  availableCalendarFormats: widget.availableCalendarFormats,
-                  calendarFormat: widget.calendarFormat,
-                  locale: widget.locale,
-                  onFormatButtonTap: (format) {
-                    assert(
-                      widget.onFormatChanged != null,
-                      'Using `FormatButton` without providing `onFormatChanged` will have no effect.',
-                    );
-
-                    widget.onFormatChanged?.call(format);
-                  },
-                  setSelectedYear: (year) {
-                    _pageController.jumpToPage(
-                      (year.year - widget.firstDay.year) * 12 +
-                          year.month -
-                          widget.firstDay.month,
-                    );
-                  });
-            },
-          ),
-        if (widget.headerVisible)
-          SizedBox(
-            height: 8,
-          ),
-        Flexible(
-          flex: widget.shouldFillViewport ? 1 : 0,
-          child: TableCalendarBase(
-            onCalendarCreated: (pageController) {
-              _pageController = pageController;
-              widget.onCalendarCreated?.call(pageController);
-            },
-            focusedDay: _focusedDay.value,
-            calendarFormat: widget.calendarFormat,
-            availableGestures: widget.availableGestures,
-            firstDay: widget.firstDay,
-            lastDay: widget.lastDay,
-            startingDayOfWeek: widget.startingDayOfWeek,
-            dowDecoration: widget.daysOfWeekStyle.decoration,
-            rowDecoration: widget.calendarStyle.rowDecoration,
-            tableBorder: widget.calendarStyle.tableBorder,
-            tablePadding: widget.calendarStyle.tablePadding,
-            dowVisible: widget.daysOfWeekVisible,
-            dowHeight: widget.daysOfWeekHeight,
-            rowHeight: widget.rowHeight,
-            formatAnimationDuration: widget.formatAnimationDuration,
-            formatAnimationCurve: widget.formatAnimationCurve,
-            pageAnimationEnabled: widget.pageAnimationEnabled,
-            pageAnimationDuration: widget.pageAnimationDuration,
-            pageAnimationCurve: widget.pageAnimationCurve,
-            availableCalendarFormats: widget.availableCalendarFormats,
-            simpleSwipeConfig: widget.simpleSwipeConfig,
-            sixWeekMonthsEnforced: widget.sixWeekMonthsEnforced,
-            onVerticalSwipe: _swipeCalendarFormat,
-            onPageChanged: (focusedDay) {
-              _focusedDay.value = focusedDay;
-              widget.onPageChanged?.call(focusedDay);
-            },
-            weekNumbersVisible: widget.weekNumbersVisible,
-            weekNumberBuilder: (BuildContext context, DateTime day) {
-              final weekNumber = _calculateWeekNumber(day);
-              Widget? cell = widget.calendarBuilders.weekNumberBuilder
-                  ?.call(context, weekNumber);
-
-              if (cell == null) {
-                cell = Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: Center(
+        Row(
+          children: [
+            Expanded(
+                child: Padding(
+                    padding: const EdgeInsets.only(left: 10),
                     child: Text(
-                      weekNumber.toString(),
-                      style: widget.calendarStyle.weekNumberTextStyle,
-                    ),
-                  ),
-                );
-              }
-
-              return cell;
-            },
-            dowBuilder: (BuildContext context, DateTime day) {
-              Widget? dowCell =
-                  widget.calendarBuilders.dowBuilder?.call(context, day);
-
-              if (dowCell == null) {
-                final weekdayString = widget.daysOfWeekStyle.dowTextFormatter
-                        ?.call(day, widget.locale) ??
-                    DateFormat.E(widget.locale).format(day);
-
-                final isWeekend =
-                    _isWeekend(day, weekendDays: widget.weekendDays);
-
-                dowCell = Center(
-                  child: ExcludeSemantics(
-                    child: Text(
-                      weekdayString,
-                      style: isWeekend
-                          ? widget.daysOfWeekStyle.weekendStyle
-                          : widget.daysOfWeekStyle.weekdayStyle,
-                    ),
-                  ),
-                );
-              }
-
-              return dowCell;
-            },
-            dayBuilder: (context, day, focusedMonth) {
-              return GestureDetector(
-                behavior: widget.dayHitTestBehavior,
-                onTap: () => _onDayTapped(day),
-                onLongPress: () => _onDayLongPressed(day),
-                child: _buildCell(day, focusedMonth),
-              );
-            },
-          ),
+                      'May 2024',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ))),
+            IconButton(
+                onPressed: _onLeftChevronTap,
+                icon: Icon(
+                  Icons.chevron_left,
+                  size: 30,
+                )),
+            IconButton(
+                onPressed: _onRightChevronTap,
+                icon: Icon(
+                  Icons.chevron_right,
+                  size: 30,
+                )),
+          ],
         ),
+        Row(
+          children: [
+            Expanded(
+                child: _buildItemBox(
+              'assets/images/streak_fire_day.png',
+              12,
+              'Day Practiced',
+            )),
+            const SizedBox(width: 20),
+            Expanded(
+                child: _buildItemBox(
+              'assets/images/shield.png',
+              1,
+              'Freezes used',
+            )),
+          ],
+        ),
+        Container(
+          margin: EdgeInsets.only(top: 20),
+          decoration: BoxDecoration(
+            border: Border.all(width: 1, color: const Color(0xFFFFBA5A)),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            children: [
+              if (widget.headerVisible)
+                ValueListenableBuilder<DateTime>(
+                  valueListenable: _focusedDay,
+                  builder: (_, value, __) {
+                    return CalendarHeader(
+                        headerTitleBuilder:
+                            widget.calendarBuilders.headerTitleBuilder,
+                        focusedMonth: value,
+                        firstDate: widget.firstDay,
+                        lastDate: widget.lastDay,
+                        primaryColor: widget.primaryColor,
+                        onPrimaryColor: widget.onPrimaryColor,
+                        surfaceColor: widget.surfaceColor,
+                        onSurfaceColor: widget.onSurfaceColor,
+                        onLeftChevronTap: _onLeftChevronTap,
+                        onRightChevronTap: _onRightChevronTap,
+                        headerStyle: widget.headerStyle,
+                        availableCalendarFormats:
+                            widget.availableCalendarFormats,
+                        calendarFormat: widget.calendarFormat,
+                        locale: widget.locale,
+                        onFormatButtonTap: (format) {
+                          assert(
+                            widget.onFormatChanged != null,
+                            'Using `FormatButton` without providing `onFormatChanged` will have no effect.',
+                          );
+
+                          widget.onFormatChanged?.call(format);
+                        },
+                        setSelectedYear: (year) {
+                          _pageController.jumpToPage(
+                            (year.year - widget.firstDay.year) * 12 +
+                                year.month -
+                                widget.firstDay.month,
+                          );
+                        });
+                  },
+                ),
+              if (widget.headerVisible) SizedBox(height: 8),
+              Flexible(
+                flex: widget.shouldFillViewport ? 1 : 0,
+                child: TableCalendarBase(
+                  onCalendarCreated: (pageController) {
+                    _pageController = pageController;
+                    widget.onCalendarCreated?.call(pageController);
+                  },
+                  focusedDay: _focusedDay.value,
+                  calendarFormat: widget.calendarFormat,
+                  availableGestures: widget.availableGestures,
+                  firstDay: widget.firstDay,
+                  lastDay: widget.lastDay,
+                  startingDayOfWeek: widget.startingDayOfWeek,
+                  dowDecoration: widget.daysOfWeekStyle.decoration,
+                  rowDecoration: widget.calendarStyle.rowDecoration,
+                  tableBorder: widget.calendarStyle.tableBorder,
+                  tablePadding: widget.calendarStyle.tablePadding,
+                  dowVisible: widget.daysOfWeekVisible,
+                  dowHeight: widget.daysOfWeekHeight,
+                  rowHeight: widget.rowHeight,
+                  formatAnimationDuration: widget.formatAnimationDuration,
+                  formatAnimationCurve: widget.formatAnimationCurve,
+                  pageAnimationEnabled: widget.pageAnimationEnabled,
+                  pageAnimationDuration: widget.pageAnimationDuration,
+                  pageAnimationCurve: widget.pageAnimationCurve,
+                  availableCalendarFormats: widget.availableCalendarFormats,
+                  simpleSwipeConfig: widget.simpleSwipeConfig,
+                  sixWeekMonthsEnforced: widget.sixWeekMonthsEnforced,
+                  onVerticalSwipe: _swipeCalendarFormat,
+                  onPageChanged: (focusedDay) {
+                    _focusedDay.value = focusedDay;
+                    widget.onPageChanged?.call(focusedDay);
+                  },
+                  weekNumbersVisible: widget.weekNumbersVisible,
+                  weekNumberBuilder: (BuildContext context, DateTime day) {
+                    final weekNumber = _calculateWeekNumber(day);
+                    Widget? cell = widget.calendarBuilders.weekNumberBuilder
+                        ?.call(context, weekNumber);
+
+                    if (cell == null) {
+                      cell = Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: Center(
+                          child: Text(
+                            weekNumber.toString(),
+                            style: widget.calendarStyle.weekNumberTextStyle,
+                          ),
+                        ),
+                      );
+                    }
+
+                    return cell;
+                  },
+                  dowBuilder: (BuildContext context, DateTime day) {
+                    Widget? dowCell =
+                        widget.calendarBuilders.dowBuilder?.call(context, day);
+
+                    if (dowCell == null) {
+                      final weekdayString = widget
+                              .daysOfWeekStyle.dowTextFormatter
+                              ?.call(day, widget.locale) ??
+                          DateFormat.E(widget.locale).format(day);
+
+                      final isWeekend =
+                          _isWeekend(day, weekendDays: widget.weekendDays);
+
+                      dowCell = Center(
+                        child: ExcludeSemantics(
+                          child: Text(
+                            weekdayString,
+                            style: isWeekend
+                                ? widget.daysOfWeekStyle.weekendStyle
+                                : widget.daysOfWeekStyle.weekdayStyle,
+                          ),
+                        ),
+                      );
+                    }
+
+                    return dowCell;
+                  },
+                  dayBuilder: (context, day, focusedMonth) {
+                    return GestureDetector(
+                      behavior: widget.dayHitTestBehavior,
+                      onTap: () => _onDayTapped(day),
+                      onLongPress: () => _onDayLongPressed(day),
+                      child: _buildCell(day, focusedMonth),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        )
       ],
     );
   }
@@ -729,6 +784,38 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
           decoration: widget.calendarStyle.markerDecoration,
         );
   }
+
+  Widget _buildItemBox(String image, int days, String content) => Container(
+        decoration: BoxDecoration(
+          border: Border.all(width: 1, color: widget.primaryColor),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Image.asset(image, height: 50),
+            ),
+            Expanded(
+                child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  days.toString(),
+                  style: TextStyle(fontWeight: FontWeight.w400, fontSize: 16),
+                ),
+                Text(
+                  content.toString(),
+                  style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: 14,
+                      color: Colors.grey),
+                )
+              ],
+            ))
+          ],
+        ),
+      );
 
   int _calculateWeekNumber(DateTime date) {
     final middleDay = date.add(const Duration(days: 3));
