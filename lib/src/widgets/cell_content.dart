@@ -1,8 +1,8 @@
 // Copyright 2019 Aleksander Woźniak
 // SPDX-License-Identifier: Apache-2.0
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
 import '../customization/calendar_builders.dart';
@@ -17,6 +17,7 @@ class CellContent extends StatelessWidget {
   final bool isSelected;
   final bool isRangeStart;
   final bool isRangeEnd;
+  final bool isShielded;
   final bool isWithinRange;
   final bool isOutside;
   final bool isDisabled;
@@ -36,6 +37,7 @@ class CellContent extends StatelessWidget {
     required this.isSelected,
     required this.isRangeStart,
     required this.isRangeEnd,
+    required this.isShielded,
     required this.isWithinRange,
     required this.isOutside,
     required this.isDisabled,
@@ -96,9 +98,11 @@ class CellContent extends StatelessWidget {
                 child: Text(text, style: calendarStyle.rangeStartTextStyle),
               );
     } else if (isRangeEnd) {
-      cell = Transform.translate(
-        offset: const Offset(0, -5),
-        child: calendarBuilders.rangeEndBuilder?.call(context, day, focusedDay) ??
+      cell = Stack(alignment: Alignment.center, children: [
+        Transform.translate(
+            offset: const Offset(0, -20),
+            child: Image.asset('assets/images/burning.gif')),
+        calendarBuilders.rangeEndBuilder?.call(context, day, focusedDay) ??
             CircleAvatar(
               child: Container(
                   height: double.infinity,
@@ -109,26 +113,32 @@ class CellContent extends StatelessWidget {
                       child: Text(text,
                           style: calendarStyle.rangeEndTextStyle))),
             ),
+      ]);
+    }
+    // else if (isToday && isTodayHighlighted) {
+    //   cell = calendarBuilders.todayBuilder?.call(context, day, focusedDay) ??
+    //       Container(
+    //         margin: margin,
+    //         padding: padding,
+    //         decoration: calendarStyle.todayDecoration,
+    //         alignment: alignment,
+    //         child: Text(text, style: calendarStyle.todayTextStyle),
+    //       );
+    // }
+    else if (isShielded) {
+      cell = Container(
+        margin: margin,
+        padding: padding,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Image.asset('assets/images/shield.png', scale: 0.8,),
+            Text(text)
+          ],
+        ),
       );
-      // Container(
-      //   height: 40,
-      //   width: 40,
-      //   margin: margin,
-      //   padding: padding,
-      //   decoration: calendarStyle.rangeEndDecoration,
-      //   alignment: alignment,
-      //   child: Text(text, style: calendarStyle.rangeEndTextStyle),
-      // );
-    } else if (isToday && isTodayHighlighted) {
-      cell = calendarBuilders.todayBuilder?.call(context, day, focusedDay) ??
-          Container(
-            margin: margin,
-            padding: padding,
-            decoration: calendarStyle.todayDecoration,
-            alignment: alignment,
-            child: Text(text, style: calendarStyle.todayTextStyle),
-          );
-    } else if (isHoliday) {
+    }
+    else if (isHoliday) {
       cell = calendarBuilders.holidayBuilder?.call(context, day, focusedDay) ??
           Container(
             margin: margin,

@@ -23,6 +23,8 @@ class _TableBasicsExampleState extends State<TableBasicsExample> {
         title: Text('TableCalendar - Basics'),
       ),
       body: TableCalendar(
+        rangeStartDay: DateTime.now(),
+        rangeEndDay: DateTime.now().add(const Duration(days: 2)),
         firstDay: kFirstDay,
         lastDay: kLastDay,
         focusedDay: _focusedDay,

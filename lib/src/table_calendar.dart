@@ -3,7 +3,6 @@
 
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:simple_gesture_detector/simple_gesture_detector.dart';
@@ -61,6 +60,9 @@ class TableCalendar<T> extends StatefulWidget {
   ///
   /// Overriding this property might be useful for testing.
   final DateTime? currentDay;
+
+  /// DateTime list which are shielded, Defaults to be empty
+  final List<DateTime> shieldedDays;
 
   /// List of days treated as weekend days.
   /// Use built-in `DateTime` weekday constants (e.g. `DateTime.monday`) instead of `int` literals (e.g. `1`).
@@ -220,6 +222,7 @@ class TableCalendar<T> extends StatefulWidget {
     this.locale,
     this.rangeStartDay,
     this.rangeEndDay,
+    this.shieldedDays = const [],
     this.weekendDays = const [DateTime.saturday, DateTime.sunday],
     this.calendarFormat = CalendarFormat.month,
     this.availableCalendarFormats = const {
@@ -465,19 +468,9 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
         // Streak day and shield used
         Row(
           children: [
-            Expanded(
-                child: _buildItemBox(
-              'assets/images/streak_fire_day.png',
-              12,
-              'Day Practiced',
-            )),
+            Expanded(child: _itemBox('streak_fire_day', 12, 'Day Practiced')),
             const SizedBox(width: 20),
-            Expanded(
-                child: _buildItemBox(
-              'assets/images/shield.png',
-              1,
-              'Freezes used',
-            )),
+            Expanded(child: _itemBox('shield', 1, 'Freezes used')),
           ],
         ),
 
@@ -614,11 +607,10 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
                   },
                   dayBuilder: (context, day, focusedMonth) {
                     return GestureDetector(
-                      behavior: widget.dayHitTestBehavior,
-                      onTap: () => _onDayTapped(day),
-                      onLongPress: () => _onDayLongPressed(day),
-                      child: _buildCell(day, focusedMonth),
-                    );
+                        behavior: widget.dayHitTestBehavior,
+                        onTap: () => _onDayTapped(day),
+                        onLongPress: () => _onDayLongPressed(day),
+                        child: _buildCell(day, focusedMonth));
                   },
                 ),
               ),
@@ -630,6 +622,7 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
   }
 
   Widget _buildCell(DateTime day, DateTime focusedDay) {
+    final isShielded = _isShieldedDay(day);
     final isOutside = day.month != focusedDay.month;
 
     if (isOutside && _shouldBlockOutsideDays) {
@@ -659,7 +652,7 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
             rangeHighlight = Center(
               child: Container(
                 margin: EdgeInsetsDirectional.only(
-                  start: isRangeStart ? constraints.maxWidth * 0.9 : 0.0,
+                  start: isRangeStart ? constraints.maxWidth * 1 : 0.0,
                   end: isRangeEnd ? constraints.maxWidth * 0.5 : 0.0,
                 ),
                 height:
@@ -687,6 +680,7 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
           calendarBuilders: widget.calendarBuilders,
           isTodayHighlighted: widget.calendarStyle.isTodayHighlighted,
           isToday: isToday,
+          isShielded: isShielded,
           isSelected: widget.selectedDayPredicate?.call(day) ?? false,
           isRangeStart: isRangeStart,
           isRangeEnd: isRangeEnd,
@@ -767,56 +761,53 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
   }
 
   Widget _buildMonthSelector() => Row(
-    children: [
-      Expanded(
-          child: Padding(
-              padding: const EdgeInsets.only(left: 10),
-              child: ValueListenableBuilder<DateTime>(
-                valueListenable: _focusedDay,
-                builder: (_, value, __) => Text(
-                  widget.headerStyle.titleTextFormatter
-                      ?.call(value, widget.locale) ??
-                      DateFormat.yMMMM('en').format(value),
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ))),
-      IconButton(
-          onPressed: _onLeftChevronTap,
-          icon: Icon(
-            Icons.chevron_left,
-            size: 30,
-          )),
-      IconButton(
-          onPressed: _onRightChevronTap,
-          icon: Icon(
-            Icons.chevron_right,
-            size: 30,
-          )),
-    ],
-  );
+        children: [
+          Expanded(
+              child: Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: ValueListenableBuilder<DateTime>(
+                    valueListenable: _focusedDay,
+                    builder: (_, value, __) => Text(
+                      widget.headerStyle.titleTextFormatter
+                              ?.call(value, widget.locale) ??
+                          DateFormat.yMMMM('en').format(value),
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ))),
+          IconButton(
+              onPressed: _onLeftChevronTap,
+              icon: Icon(
+                Icons.chevron_left,
+                size: 30,
+              )),
+          IconButton(
+              onPressed: _onRightChevronTap,
+              icon: Icon(
+                Icons.chevron_right,
+                size: 30,
+              )),
+        ],
+      );
 
-  Widget _buildItemBox(String image, int days, String content) => Container(
+  Widget _itemBox(String image, int days, String content) => Container(
         decoration: BoxDecoration(
-          border: Border.all(width: 1, color: widget.primaryColor),
-          borderRadius: BorderRadius.circular(20),
-        ),
+            border: Border.all(width: 1, color: widget.primaryColor),
+            borderRadius: BorderRadius.circular(16)),
         child: Row(
           children: [
             Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Image.asset(image, height: 50),
-            ),
+                padding: const EdgeInsets.all(8.0),
+                child: Image.asset('assets/images/$image.png', height: 50)),
             Expanded(
                 child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  days.toString(),
-                  style: TextStyle(fontWeight: FontWeight.w400, fontSize: 16),
-                ),
+                Text(days.toString(),
+                    style:
+                        TextStyle(fontWeight: FontWeight.w400, fontSize: 16)),
                 Text(
                   content.toString(),
                   style: TextStyle(
@@ -900,5 +891,13 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
     List<int> weekendDays = const [DateTime.saturday, DateTime.sunday],
   }) {
     return weekendDays.contains(day.weekday);
+  }
+
+  bool _isShieldedDay(DateTime currentDay) {
+    for (DateTime day in widget.shieldedDays) {
+      if (isSameDay(currentDay, day)) return true;
+    }
+
+    return false;
   }
 }

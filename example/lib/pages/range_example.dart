@@ -1,6 +1,7 @@
 // Copyright 2019 Aleksander Woźniak
 // SPDX-License-Identifier: Apache-2.0
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -21,40 +22,36 @@ class _TableRangeExampleState extends State<TableRangeExample> {
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
 
+  Color mainColor = Color(0xFFFFBA5A);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Text('TableCalendar - Range')
-      ),
+      appBar: AppBar(title: Text('TableCalendar - Range')),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15),
+          padding: EdgeInsets.symmetric(
+              horizontal: MediaQuery.of(context).size.width * 0.05),
           child: TableCalendar(
+            shieldedDays: [DateTime.now()],
             headerStyle: HeaderStyle(
               formatButtonVisible: false,
               titleCentered: true,
             ),
             calendarStyle: CalendarStyle(
-              withinRangeTextStyle: TextStyle(
-                fontSize: 16,
-                color: Color(0xFFFFBA5A),
-              ),
-              rangeStartTextStyle: TextStyle(
-                fontSize: 16,
-                color: Color(0xFFFFBA5A),
-              ),
-              rangeHighlightColor: const Color(0xFFFFBA5A).withOpacity(0.2),
+              withinRangeTextStyle: TextStyle(fontSize: 16, color: mainColor),
+              rangeStartTextStyle: TextStyle(fontSize: 16, color: mainColor),
+              rangeHighlightColor: mainColor.withOpacity(0.2),
               rangeStartDecoration: BoxDecoration(
-                color: Color(0xFFFFBA5A).withOpacity(0.2),
+                color: mainColor.withOpacity(0.2),
                 borderRadius: BorderRadius.horizontal(
                   left: Radius.circular(60),
                   right: Radius.zero,
                 ),
               ),
               rangeEndDecoration: BoxDecoration(
-                color: Color(0xFFFFBA5A),
+                color: mainColor,
                 borderRadius: BorderRadius.circular(60),
               ),
             ),

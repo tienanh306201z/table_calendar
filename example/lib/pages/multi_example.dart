@@ -67,6 +67,8 @@ class _TableMultiExampleState extends State<TableMultiExample> {
       body: Column(
         children: [
           TableCalendar<Event>(
+            rangeStartDay: DateTime.now(),
+            rangeEndDay: DateTime.now().add(const Duration(days: 2)),
             firstDay: kFirstDay,
             lastDay: kLastDay,
             focusedDay: _focusedDay,

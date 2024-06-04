@@ -164,7 +164,7 @@ class CalendarStyle {
     this.markerMargin = const EdgeInsets.symmetric(horizontal: 0.3),
     this.markersAlignment = Alignment.bottomCenter,
     this.markersMaxCount = 4,
-    this.cellMargin = const EdgeInsets.all(6.0),
+    this.cellMargin = const EdgeInsets.symmetric(vertical: 6.0),
     this.cellPadding = const EdgeInsets.all(0),
     this.cellAlignment = Alignment.center,
     this.markersOffset = const PositionedOffset(),
@@ -174,11 +174,11 @@ class CalendarStyle {
       shape: BoxShape.circle,
     ),
     this.todayTextStyle = const TextStyle(
-      color: const Color(0xFFFAFAFA),
-      fontSize: 16.0,
+      // color: const Color(0xFFFAFAFA),
+      fontSize: 15.0,
     ), //
     this.todayDecoration = const BoxDecoration(
-      color: const Color(0xFF9FA8DA),
+      // color: const Color(0xFF9FA8DA),
       shape: BoxShape.circle,
     ),
     this.selectedTextStyle = const TextStyle(
