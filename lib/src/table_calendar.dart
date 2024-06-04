@@ -3,6 +3,7 @@
 
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:simple_gesture_detector/simple_gesture_detector.dart';
@@ -458,37 +459,10 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Row(
-          children: [
-            Expanded(
-                child: Padding(
-                    padding: const EdgeInsets.only(left: 10),
-                    child: ValueListenableBuilder<DateTime>(
-                      valueListenable: _focusedDay,
-                      builder: (_, value, __) => Text(
-                        widget.headerStyle.titleTextFormatter
-                            ?.call(value, widget.locale) ??
-                            DateFormat.yMMMM('en').format(value),
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ))),
-            IconButton(
-                onPressed: _onLeftChevronTap,
-                icon: Icon(
-                  Icons.chevron_left,
-                  size: 30,
-                )),
-            IconButton(
-                onPressed: _onRightChevronTap,
-                icon: Icon(
-                  Icons.chevron_right,
-                  size: 30,
-                )),
-          ],
-        ),
+        // Select month
+        _buildMonthSelector(),
+
+        // Streak day and shield used
         Row(
           children: [
             Expanded(
@@ -506,6 +480,8 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
             )),
           ],
         ),
+
+        // Main table
         Container(
           margin: EdgeInsets.only(top: 20),
           decoration: BoxDecoration(
@@ -514,6 +490,7 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
           ),
           child: Column(
             children: [
+              // Day abbreviation
               if (widget.headerVisible)
                 ValueListenableBuilder<DateTime>(
                   valueListenable: _focusedDay,
@@ -553,6 +530,8 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
                   },
                 ),
               if (widget.headerVisible) SizedBox(height: 8),
+
+              // Main days
               Flexible(
                 flex: widget.shouldFillViewport ? 1 : 0,
                 child: TableCalendarBase(
@@ -786,6 +765,38 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
           decoration: widget.calendarStyle.markerDecoration,
         );
   }
+
+  Widget _buildMonthSelector() => Row(
+    children: [
+      Expanded(
+          child: Padding(
+              padding: const EdgeInsets.only(left: 10),
+              child: ValueListenableBuilder<DateTime>(
+                valueListenable: _focusedDay,
+                builder: (_, value, __) => Text(
+                  widget.headerStyle.titleTextFormatter
+                      ?.call(value, widget.locale) ??
+                      DateFormat.yMMMM('en').format(value),
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ))),
+      IconButton(
+          onPressed: _onLeftChevronTap,
+          icon: Icon(
+            Icons.chevron_left,
+            size: 30,
+          )),
+      IconButton(
+          onPressed: _onRightChevronTap,
+          icon: Icon(
+            Icons.chevron_right,
+            size: 30,
+          )),
+    ],
+  );
 
   Widget _buildItemBox(String image, int days, String content) => Container(
         decoration: BoxDecoration(
