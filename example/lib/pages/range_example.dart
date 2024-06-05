@@ -25,6 +25,13 @@ class _TableRangeExampleState extends State<TableRangeExample> {
   Color mainColor = Color(0xFFFFBA5A);
 
   @override
+  void initState() {
+    _rangeStart = DateTime(2024, 6, 3);
+    _rangeEnd = DateTime(2024, 6, 12);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
@@ -34,7 +41,11 @@ class _TableRangeExampleState extends State<TableRangeExample> {
           padding: EdgeInsets.symmetric(
               horizontal: MediaQuery.of(context).size.width * 0.05),
           child: TableCalendar(
-            shieldedDays: [DateTime.now()],
+            shieldedDays: [
+              DateTime.now(),
+              DateTime.now().add(const Duration(days: 2)),
+              DateTime.now().add(const Duration(days: 5)),
+            ],
             headerStyle: HeaderStyle(
               formatButtonVisible: false,
               titleCentered: true,

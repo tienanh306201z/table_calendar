@@ -477,6 +477,7 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
         // Main table
         Container(
           margin: EdgeInsets.only(top: 20),
+          padding: EdgeInsets.symmetric(horizontal: 10),
           decoration: BoxDecoration(
             border: Border.all(width: 1, color: const Color(0xFFFFBA5A)),
             borderRadius: BorderRadius.circular(20),
@@ -607,9 +608,9 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
                   },
                   dayBuilder: (context, day, focusedMonth) {
                     return GestureDetector(
-                        behavior: widget.dayHitTestBehavior,
-                        onTap: () => _onDayTapped(day),
-                        onLongPress: () => _onDayLongPressed(day),
+                        // behavior: widget.dayHitTestBehavior,
+                        // onTap: () => _onDayTapped(day),
+                        // onLongPress: () => _onDayLongPressed(day),
                         child: _buildCell(day, focusedMonth));
                   },
                 ),
