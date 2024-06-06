@@ -26,7 +26,7 @@ class _TableRangeExampleState extends State<TableRangeExample> {
 
   @override
   void initState() {
-    _rangeStart = DateTime(2024, 6, 3);
+    _rangeStart = DateTime(2024, 5, 3);
     _rangeEnd = DateTime(2024, 6, 12);
     super.initState();
   }
