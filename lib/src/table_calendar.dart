@@ -308,6 +308,29 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
     super.initState();
     _focusedDay = ValueNotifier(widget.focusedDay);
     _rangeSelectionMode = widget.rangeSelectionMode;
+
+    Future.delayed(const Duration(seconds: 1), () {
+      Navigator.push(
+        context,
+        TransparentRoute(
+          builder: (context) => Scaffold(
+            appBar: AppBar(),
+            backgroundColor: Colors.black.withOpacity(0.5),
+            body: Container(
+              child: Center(
+                child: Hero(
+                  tag: 'shield',
+                  child: Image.asset(
+                    'assets/images/shield.png',
+                    scale: 0.2,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    });
   }
 
   @override
@@ -917,5 +940,42 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
     }
 
     return false;
+  }
+}
+
+class TransparentRoute extends PageRoute<void> {
+  TransparentRoute({required this.builder}) : super();
+
+  final WidgetBuilder builder;
+
+  @override
+  Color get barrierColor => Colors.black.withOpacity(0.5);
+
+  @override
+  bool get opaque => false;
+
+  @override
+  bool get barrierDismissible => true;
+
+  @override
+  String get barrierLabel => 'Dismiss';
+
+  @override
+  bool get maintainState => true;
+
+  @override
+  Duration get transitionDuration => Duration(milliseconds: 300);
+
+  @override
+  Widget buildPage(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+    return builder(context);
+  }
+
+  @override
+  Widget buildTransitions(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
+    return FadeTransition(
+      opacity: animation,
+      child: child,
+    );
   }
 }
