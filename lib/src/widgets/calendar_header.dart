@@ -71,7 +71,6 @@ class _CalendarHeaderState extends State<CalendarHeader> {
     return Container(
       decoration: BoxDecoration(color: Colors.white.withOpacity(0.27)),
       margin: widget.headerStyle.headerMargin,
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

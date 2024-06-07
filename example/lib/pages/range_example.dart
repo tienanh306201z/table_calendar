@@ -1,7 +1,6 @@
 // Copyright 2019 Aleksander Woźniak
 // SPDX-License-Identifier: Apache-2.0
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -22,12 +21,12 @@ class _TableRangeExampleState extends State<TableRangeExample> {
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
 
-  Color mainColor = Color(0xFFFFBA5A);
+  Color mainColor = Color(0xFFFFAB33);
 
   @override
   void initState() {
-    _rangeStart = DateTime(2024, 5, 3);
-    _rangeEnd = DateTime(2024, 6, 12);
+    _rangeStart = DateTime(2024, 6, 1);
+    _rangeEnd = DateTime.now();
     super.initState();
   }
 
@@ -43,8 +42,6 @@ class _TableRangeExampleState extends State<TableRangeExample> {
           child: TableCalendar(
             shieldedDays: [
               DateTime.now(),
-              DateTime.now().add(const Duration(days: 2)),
-              DateTime.now().add(const Duration(days: 5)),
             ],
             headerStyle: HeaderStyle(
               formatButtonVisible: false,

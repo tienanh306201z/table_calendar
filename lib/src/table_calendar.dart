@@ -212,6 +212,10 @@ class TableCalendar<T> extends StatefulWidget {
   final Color surfaceColor;
   final Color onSurfaceColor;
 
+  /// Additional data
+  final int practicedDay;
+  final int shieldUsed;
+
   /// Creates a `TableCalendar` widget.
   TableCalendar({
     Key? key,
@@ -273,6 +277,8 @@ class TableCalendar<T> extends StatefulWidget {
     this.onPrimaryColor = Colors.white,
     this.surfaceColor = Colors.white,
     this.onSurfaceColor = Colors.black,
+    this.practicedDay = 0,
+    this.shieldUsed = 0,
   })  : assert(availableCalendarFormats.keys.contains(calendarFormat)),
         assert(availableCalendarFormats.length <= CalendarFormat.values.length),
         assert(weekendDays.isNotEmpty
@@ -288,6 +294,8 @@ class TableCalendar<T> extends StatefulWidget {
   @override
   _TableCalendarState<T> createState() => _TableCalendarState<T>();
 }
+
+final keyy = GlobalKey();
 
 class _TableCalendarState<T> extends State<TableCalendar<T>> {
   late final PageController _pageController;
@@ -468,9 +476,19 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
         // Streak day and shield used
         Row(
           children: [
-            Expanded(child: _itemBox('streak_fire_day', 12, 'Day Practiced')),
+            Expanded(
+                child: _itemBox(
+              'streak_fire_day',
+              widget.practicedDay,
+              'Day Practiced',
+            )),
             const SizedBox(width: 20),
-            Expanded(child: _itemBox('shield', 1, 'Freezes used')),
+            Expanded(
+                child: _itemBox(
+              'shield',
+              widget.shieldUsed,
+              'Freezes used',
+            )),
           ],
         ),
 
@@ -523,7 +541,6 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
                         });
                   },
                 ),
-              if (widget.headerVisible) SizedBox(height: 8),
 
               // Main days
               Flexible(

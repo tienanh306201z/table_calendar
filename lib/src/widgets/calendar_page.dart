@@ -19,8 +19,8 @@ class CalendarPage extends StatelessWidget {
   const CalendarPage({
     Key? key,
     required this.visibleDays,
-    this.dowBuilder,
     required this.dayBuilder,
+    this.dowBuilder,
     this.weekNumberBuilder,
     this.dowDecoration,
     this.rowDecoration,

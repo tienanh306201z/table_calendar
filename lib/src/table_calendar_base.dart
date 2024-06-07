@@ -185,7 +185,7 @@ class _TableCalendarBaseState extends State<TableCalendarBase> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-      builder: (context, constraints) {
+      builder: (_, constraints) {
         return SimpleGestureDetector(
           // onVerticalSwipe: _canScrollVertically ? widget.onVerticalSwipe : null,
           // swipeConfig: widget.simpleSwipeConfig,
