@@ -25,7 +25,7 @@ class _TableRangeExampleState extends State<TableRangeExample> {
 
   @override
   void initState() {
-    _rangeStart = DateTime(2024, 6, 1);
+    _rangeStart = DateTime.now();
     _rangeEnd = DateTime.now();
     super.initState();
   }
@@ -40,14 +40,19 @@ class _TableRangeExampleState extends State<TableRangeExample> {
           padding: EdgeInsets.symmetric(
               horizontal: MediaQuery.of(context).size.width * 0.05),
           child: TableCalendar(
+            openType: OpenType.useShield,
+            rangeStartDay: _rangeStart,
+            rangeEndDay: _rangeEnd,
             shieldedDays: [
-              DateTime.now(),
+              // DateTime.now(),
+              DateTime.now().add(const Duration(days: -2)),
             ],
             headerStyle: HeaderStyle(
               formatButtonVisible: false,
               titleCentered: true,
             ),
             calendarStyle: CalendarStyle(
+              outsideDaysVisible: false,
               withinRangeTextStyle: TextStyle(fontSize: 16, color: mainColor),
               rangeStartTextStyle: TextStyle(fontSize: 16, color: mainColor),
               rangeHighlightColor: mainColor.withOpacity(0.2),
@@ -67,40 +72,12 @@ class _TableRangeExampleState extends State<TableRangeExample> {
             lastDay: kLastDay,
             focusedDay: _focusedDay,
             selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-            rangeStartDay: _rangeStart,
-            rangeEndDay: _rangeEnd,
             calendarFormat: _calendarFormat,
             rangeSelectionMode: _rangeSelectionMode,
-            onDaySelected: (selectedDay, focusedDay) {
-              if (!isSameDay(_selectedDay, selectedDay)) {
-                setState(() {
-                  _selectedDay = selectedDay;
-                  _focusedDay = focusedDay;
-                  _rangeStart = null; // Important to clean those
-                  _rangeEnd = null;
-                  _rangeSelectionMode = RangeSelectionMode.toggledOff;
-                });
-              }
-            },
-            onRangeSelected: (start, end, focusedDay) {
-              setState(() {
-                _selectedDay = null;
-                _focusedDay = focusedDay;
-                _rangeStart = start;
-                _rangeEnd = end;
-                _rangeSelectionMode = RangeSelectionMode.toggledOn;
-              });
-            },
-            onFormatChanged: (format) {
-              if (_calendarFormat != format) {
-                setState(() {
-                  _calendarFormat = format;
-                });
-              }
-            },
-            onPageChanged: (focusedDay) {
-              _focusedDay = focusedDay;
-            },
+            onDaySelected: (_, __) {},
+            onRangeSelected: (_, __, ___) {},
+            onFormatChanged: (_) {},
+            onPageChanged: (_) {},
           ),
         ),
       ),

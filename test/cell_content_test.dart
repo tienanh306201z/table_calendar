@@ -25,6 +25,8 @@ Widget setupTestWidget(
   return Directionality(
     textDirection: TextDirection.ltr,
     child: CellContent(
+      openType: OpenType.normal,
+      shieldAnimationDelay: 0,
       day: cellDay,
       focusedDay: cellDay,
       calendarBuilders: calendarBuilders,

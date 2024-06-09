@@ -3,9 +3,11 @@
 
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:simple_gesture_detector/simple_gesture_detector.dart';
+import 'package:table_calendar/src/widgets/animated_shield_screen.dart';
 
 import 'customization/calendar_builders.dart';
 import 'customization/calendar_style.dart';
@@ -27,6 +29,8 @@ typedef OnRangeSelected = void Function(
 
 /// Modes that range selection can operate in.
 enum RangeSelectionMode { disabled, toggledOff, toggledOn, enforced }
+
+enum OpenType { joinChallenge, normal, useShield, notStarted }
 
 /// Highly customizable, feature-packed Flutter calendar with gestures, animations and multiple formats.
 class TableCalendar<T> extends StatefulWidget {
@@ -215,6 +219,10 @@ class TableCalendar<T> extends StatefulWidget {
   /// Additional data
   final int practicedDay;
   final int shieldUsed;
+  final int shieldAnimationDelay;
+  final int shieldAnimationTime;
+
+  final OpenType openType;
 
   /// Creates a `TableCalendar` widget.
   TableCalendar({
@@ -279,6 +287,9 @@ class TableCalendar<T> extends StatefulWidget {
     this.onSurfaceColor = Colors.black,
     this.practicedDay = 0,
     this.shieldUsed = 0,
+    this.openType = OpenType.normal,
+    this.shieldAnimationDelay = 1000,
+    this.shieldAnimationTime = 2000,
   })  : assert(availableCalendarFormats.keys.contains(calendarFormat)),
         assert(availableCalendarFormats.length <= CalendarFormat.values.length),
         assert(weekendDays.isNotEmpty
@@ -295,13 +306,10 @@ class TableCalendar<T> extends StatefulWidget {
   _TableCalendarState<T> createState() => _TableCalendarState<T>();
 }
 
-final keyy = GlobalKey();
-
 class _TableCalendarState<T> extends State<TableCalendar<T>> {
   late final PageController _pageController;
   late final ValueNotifier<DateTime> _focusedDay;
   late RangeSelectionMode _rangeSelectionMode;
-  DateTime? _firstSelectedDay;
 
   @override
   void initState() {
@@ -309,28 +317,16 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
     _focusedDay = ValueNotifier(widget.focusedDay);
     _rangeSelectionMode = widget.rangeSelectionMode;
 
-    Future.delayed(const Duration(seconds: 1), () {
-      Navigator.push(
-        context,
-        TransparentRoute(
-          builder: (context) => Scaffold(
-            appBar: AppBar(),
-            backgroundColor: Colors.black.withOpacity(0.5),
-            body: Container(
-              child: Center(
-                child: Hero(
-                  tag: 'shield',
-                  child: Image.asset(
-                    'assets/images/shield.png',
-                    scale: 0.2,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-    });
+
+    switch (widget.openType) {
+      case OpenType.useShield:
+        _showShieldAnimation();
+        break;
+      case OpenType.joinChallenge:
+        break;
+      default:
+        break;
+    }
   }
 
   @override
@@ -344,10 +340,6 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
     if (_rangeSelectionMode != widget.rangeSelectionMode) {
       _rangeSelectionMode = widget.rangeSelectionMode;
     }
-
-    if (widget.rangeStartDay == null && widget.rangeEndDay == null) {
-      _firstSelectedDay = null;
-    }
   }
 
   @override
@@ -355,14 +347,6 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
     _focusedDay.dispose();
     super.dispose();
   }
-
-  bool get _isRangeSelectionToggleable =>
-      _rangeSelectionMode == RangeSelectionMode.toggledOn ||
-      _rangeSelectionMode == RangeSelectionMode.toggledOff;
-
-  bool get _isRangeSelectionOn =>
-      _rangeSelectionMode == RangeSelectionMode.toggledOn ||
-      _rangeSelectionMode == RangeSelectionMode.enforced;
 
   bool get _shouldBlockOutsideDays =>
       !widget.calendarStyle.outsideDaysVisible &&
@@ -387,106 +371,28 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
     }
   }
 
-  void _onDayTapped(DateTime day) {
-    final isOutside = day.month != _focusedDay.value.month;
-    if (isOutside && _shouldBlockOutsideDays) {
-      return;
-    }
-
-    if (_isDayDisabled(day)) {
-      return widget.onDisabledDayTapped?.call(day);
-    }
-
-    _updateFocusOnTap(day);
-
-    if (_isRangeSelectionOn && widget.onRangeSelected != null) {
-      if (_firstSelectedDay == null) {
-        _firstSelectedDay = day;
-        widget.onRangeSelected!(_firstSelectedDay, null, _focusedDay.value);
-      } else {
-        if (day.isAfter(_firstSelectedDay!)) {
-          widget.onRangeSelected!(_firstSelectedDay, day, _focusedDay.value);
-          _firstSelectedDay = null;
-        } else if (day.isBefore(_firstSelectedDay!)) {
-          widget.onRangeSelected!(day, _firstSelectedDay, _focusedDay.value);
-          _firstSelectedDay = null;
-        }
-      }
-    } else {
-      widget.onDaySelected?.call(day, _focusedDay.value);
-    }
-  }
-
-  void _onDayLongPressed(DateTime day) {
-    final isOutside = day.month != _focusedDay.value.month;
-    if (isOutside && _shouldBlockOutsideDays) {
-      return;
-    }
-
-    if (_isDayDisabled(day)) {
-      return widget.onDisabledDayLongPressed?.call(day);
-    }
-
-    if (widget.onDayLongPressed != null) {
-      _updateFocusOnTap(day);
-      return widget.onDayLongPressed!(day, _focusedDay.value);
-    }
-
-    if (widget.onRangeSelected != null) {
-      if (_isRangeSelectionToggleable) {
-        _updateFocusOnTap(day);
-        _toggleRangeSelection();
-
-        if (_isRangeSelectionOn) {
-          _firstSelectedDay = day;
-          widget.onRangeSelected!(_firstSelectedDay, null, _focusedDay.value);
-        } else {
-          _firstSelectedDay = null;
-          widget.onDaySelected?.call(day, _focusedDay.value);
-        }
-      }
-    }
-  }
-
-  void _updateFocusOnTap(DateTime day) {
-    if (widget.pageJumpingEnabled) {
-      _focusedDay.value = day;
-      return;
-    }
-
-    if (widget.calendarFormat == CalendarFormat.month) {
-      if (_isBeforeMonth(day, _focusedDay.value)) {
-        _focusedDay.value = _firstDayOfMonth(_focusedDay.value);
-      } else if (_isAfterMonth(day, _focusedDay.value)) {
-        _focusedDay.value = _lastDayOfMonth(_focusedDay.value);
-      } else {
-        _focusedDay.value = day;
-      }
-    } else {
-      _focusedDay.value = day;
-    }
-  }
-
-  void _toggleRangeSelection() {
-    if (_rangeSelectionMode == RangeSelectionMode.toggledOn) {
-      _rangeSelectionMode = RangeSelectionMode.toggledOff;
-    } else {
-      _rangeSelectionMode = RangeSelectionMode.toggledOn;
-    }
-  }
-
-  void _onLeftChevronTap() {
+  _onLeftChevronTap() {
     _pageController.previousPage(
       duration: widget.pageAnimationDuration,
       curve: widget.pageAnimationCurve,
     );
   }
 
-  void _onRightChevronTap() {
+  _onRightChevronTap() {
     _pageController.nextPage(
       duration: widget.pageAnimationDuration,
       curve: widget.pageAnimationCurve,
     );
+  }
+
+  _showShieldAnimation() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Navigator.push(
+          context,
+          TransparentRoute(
+              builder: (context) =>
+                  AnimatedShieldScreen(delayTime: widget.shieldAnimationDelay)));
+    });
   }
 
   @override
@@ -520,7 +426,7 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
           margin: EdgeInsets.only(top: 20),
           padding: EdgeInsets.symmetric(horizontal: 10),
           decoration: BoxDecoration(
-            border: Border.all(width: 1, color: const Color(0xFFFFBA5A)),
+            border: Border.all(width: 1, color: widget.primaryColor),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Column(
@@ -716,6 +622,8 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
         Widget content = CellContent(
           key: ValueKey('CellContent-${day.year}-${day.month}-${day.day}'),
           day: day,
+          openType: widget.openType,
+          shieldAnimationDelay: widget.shieldAnimationDelay,
           focusedDay: focusedDay,
           calendarStyle: widget.calendarStyle,
           calendarBuilders: widget.calendarBuilders,
@@ -900,33 +808,6 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
         : widget.enabledDayPredicate!(day);
   }
 
-  DateTime _firstDayOfMonth(DateTime month) {
-    return DateTime.utc(month.year, month.month, 1);
-  }
-
-  DateTime _lastDayOfMonth(DateTime month) {
-    final date = month.month < 12
-        ? DateTime.utc(month.year, month.month + 1, 1)
-        : DateTime.utc(month.year + 1, 1, 1);
-    return date.subtract(const Duration(days: 1));
-  }
-
-  bool _isBeforeMonth(DateTime day, DateTime month) {
-    if (day.year == month.year) {
-      return day.month < month.month;
-    } else {
-      return day.isBefore(month);
-    }
-  }
-
-  bool _isAfterMonth(DateTime day, DateTime month) {
-    if (day.year == month.year) {
-      return day.month > month.month;
-    } else {
-      return day.isAfter(month);
-    }
-  }
-
   bool _isWeekend(
     DateTime day, {
     List<int> weekendDays = const [DateTime.saturday, DateTime.sunday],
@@ -940,42 +821,5 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
     }
 
     return false;
-  }
-}
-
-class TransparentRoute extends PageRoute<void> {
-  TransparentRoute({required this.builder}) : super();
-
-  final WidgetBuilder builder;
-
-  @override
-  Color get barrierColor => Colors.black.withOpacity(0.5);
-
-  @override
-  bool get opaque => false;
-
-  @override
-  bool get barrierDismissible => true;
-
-  @override
-  String get barrierLabel => 'Dismiss';
-
-  @override
-  bool get maintainState => true;
-
-  @override
-  Duration get transitionDuration => Duration(milliseconds: 300);
-
-  @override
-  Widget buildPage(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
-    return builder(context);
-  }
-
-  @override
-  Widget buildTransitions(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
-    return FadeTransition(
-      opacity: animation,
-      child: child,
-    );
   }
 }
