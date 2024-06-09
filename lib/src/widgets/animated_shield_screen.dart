@@ -49,7 +49,7 @@ class TransparentRoute extends PageRoute<void> {
   final WidgetBuilder builder;
 
   @override
-  Color get barrierColor => Colors.black.withOpacity(0.5);
+  Color get barrierColor => Colors.transparent;
 
   @override
   bool get opaque => false;
