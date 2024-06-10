@@ -98,8 +98,7 @@ class _CellContentState extends State<CellContent>
 
     if (widget.isToday && widget.isShielded)
       Future.delayed(
-          Duration(
-              seconds: widget.openType == FontWeight.normal ? 0 : 2),
+          Duration(seconds: widget.openType == FontWeight.normal ? 0 : 2),
           () => _sparklingController.forward());
 
     super.initState();
@@ -324,27 +323,37 @@ class _CellContentState extends State<CellContent>
         );
         break;
       case OpenType.normal:
-        child = Stack(
-          alignment: Alignment.center,
-          children: [
-            if (widget.openType != OpenType.notStarted)
-              Transform.translate(
-                offset: const Offset(0, -25),
-                child: Transform.scale(
-                  scale: 3,
-                  child: Image.asset('assets/images/burning.gif'),
-                ),
-              ),
-            CircleAvatar(
-              child: Container(
-                  decoration: widget.calendarStyle.rangeEndDecoration,
-                  alignment: alignment,
-                  child: Center(
-                      child: Text(text,
-                          style: widget.calendarStyle.rangeEndTextStyle))),
-            ),
-          ],
-        );
+        child = widget.isShielded
+            ? Stack(
+                alignment: Alignment.center,
+                children: [
+                  Image.asset('assets/images/shield.png', scale: 0.8),
+                  Text(text),
+                  _sparkleAnimation()
+                ],
+              )
+            : Stack(
+                alignment: Alignment.center,
+                children: [
+                  if (widget.openType != OpenType.notStarted)
+                    Transform.translate(
+                      offset: const Offset(0, -25),
+                      child: Transform.scale(
+                        scale: 3,
+                        child: Image.asset('assets/images/burning.gif'),
+                      ),
+                    ),
+                  CircleAvatar(
+                    child: Container(
+                        decoration: widget.calendarStyle.rangeEndDecoration,
+                        alignment: alignment,
+                        child: Center(
+                            child: Text(text,
+                                style:
+                                    widget.calendarStyle.rangeEndTextStyle))),
+                  ),
+                ],
+              );
         break;
       case OpenType.useShield:
         child = Stack(
@@ -366,38 +375,37 @@ class _CellContentState extends State<CellContent>
               ),
             ),
             Text(text),
-            AnimatedBuilder(
-                animation: _sparklingController,
-                builder: (_, __) => Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Opacity(
-                          opacity: _sparklingAnimation1.value,
-                          child: Transform.translate(
-                              offset: const Offset(-15, -15),
-                              child: SvgPicture.asset(
-                                  'assets/images/sparkle.svg')),
-                        ),
-                        Opacity(
-                          opacity: _sparklingAnimation2.value,
-                          child: Transform.translate(
-                              offset: const Offset(0, 25),
-                              child: SvgPicture.asset(
-                                  'assets/images/sparkle.svg')),
-                        ),
-                        Opacity(
-                          opacity: _sparklingAnimation3.value,
-                          child: Transform.translate(
-                              offset: const Offset(20, 0),
-                              child: SvgPicture.asset(
-                                  'assets/images/sparkle.svg')),
-                        ),
-                      ],
-                    ))
+            _sparkleAnimation()
           ],
         );
     }
 
     return Container(margin: margin, padding: padding, child: child);
   }
+
+  _sparkleAnimation() => AnimatedBuilder(
+      animation: _sparklingController,
+      builder: (_, __) => Stack(
+            alignment: Alignment.center,
+            children: [
+              Opacity(
+                opacity: _sparklingAnimation1.value,
+                child: Transform.translate(
+                    offset: const Offset(-15, -15),
+                    child: SvgPicture.asset('assets/images/sparkle.svg')),
+              ),
+              Opacity(
+                opacity: _sparklingAnimation2.value,
+                child: Transform.translate(
+                    offset: const Offset(0, 25),
+                    child: SvgPicture.asset('assets/images/sparkle.svg')),
+              ),
+              Opacity(
+                opacity: _sparklingAnimation3.value,
+                child: Transform.translate(
+                    offset: const Offset(20, 0),
+                    child: SvgPicture.asset('assets/images/sparkle.svg')),
+              ),
+            ],
+          ));
 }
