@@ -1,9 +1,12 @@
 // Copyright 2019 Aleksander Woźniak
 // SPDX-License-Identifier: Apache-2.0
 
+import 'dart:ffi';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 
 import '../../table_calendar.dart';
@@ -56,27 +59,55 @@ class CellContent extends StatefulWidget {
 
 class _CellContentState extends State<CellContent>
     with SingleTickerProviderStateMixin {
-  late AnimationController _todayController;
-  late Animation _todayAnimation;
+  late AnimationController _sparklingController;
+  late Animation _sparklingAnimation1;
+  late Animation _sparklingAnimation2;
+  late Animation _sparklingAnimation3;
 
   final int joinChallengeDelayTime = 500;
 
   @override
   void initState() {
-    _todayController = AnimationController(
+    _sparklingController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: joinChallengeDelayTime),
+      duration: Duration(seconds: 3),
     );
-    _todayAnimation = Tween<double>(begin: 0, end: 1).animate(_todayController);
+    _sparklingController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _sparklingController.forward(from: 0);
+      }
+    });
+    _sparklingAnimation1 = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween<double>(begin: 0.0, end: 1.0), weight: 1),
+      TweenSequenceItem(tween: Tween<double>(begin: 1.0, end: 0.0), weight: 1),
+    ]).animate(CurvedAnimation(
+        parent: _sparklingController,
+        curve: Interval(0, 0.5, curve: Curves.easeInOut)));
+    _sparklingAnimation2 = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween<double>(begin: 0.0, end: 1.0), weight: 1),
+      TweenSequenceItem(tween: Tween<double>(begin: 1.0, end: 0.0), weight: 1),
+    ]).animate(CurvedAnimation(
+        parent: _sparklingController,
+        curve: Interval(0.25, 0.75, curve: Curves.easeInOut)));
+    _sparklingAnimation3 = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween<double>(begin: 0.0, end: 1.0), weight: 1),
+      TweenSequenceItem(tween: Tween<double>(begin: 1.0, end: 0.0), weight: 1),
+    ]).animate(CurvedAnimation(
+        parent: _sparklingController,
+        curve: Interval(0.5, 1, curve: Curves.easeInOut)));
 
-    _todayController.forward();
+    if (widget.isToday && widget.isShielded)
+      Future.delayed(
+          Duration(
+              seconds: widget.openType == FontWeight.normal ? 0 : 2),
+          () => _sparklingController.forward());
 
     super.initState();
   }
 
   @override
   void dispose() {
-    _todayController.dispose();
+    _sparklingController.dispose();
     super.dispose();
   }
 
@@ -255,15 +286,13 @@ class _CellContentState extends State<CellContent>
     switch (widget.openType) {
       case OpenType.notStarted:
         child = Center(
-          child: CircleAvatar(
-            child: Container(
-                decoration: widget.calendarStyle.rangeEndDecoration,
-                alignment: alignment,
-                child: Center(
-                    child: Text(text,
-                        style: widget.calendarStyle.rangeEndTextStyle))),
-          ),
-        );
+            child: CircleAvatar(
+                child: Container(
+                    decoration: widget.calendarStyle.rangeEndDecoration,
+                    alignment: alignment,
+                    child: Center(
+                        child: Text(text,
+                            style: widget.calendarStyle.rangeEndTextStyle)))));
         break;
       case OpenType.joinChallenge:
         child = Stack(
@@ -271,34 +300,25 @@ class _CellContentState extends State<CellContent>
           children: [
             FutureBuilder(
               future: Future.delayed(
-                  Duration(milliseconds: joinChallengeDelayTime + 300)),
+                  Duration(milliseconds: joinChallengeDelayTime + 500)),
               builder: (_, snapShot) =>
-              snapShot.connectionState == ConnectionState.done
-                  ? Transform.translate(
-                offset: const Offset(0, -25),
-                child: Transform.scale(
-                  scale: 3,
-                  child: Image.asset('assets/images/burning.gif'),
-                ),
-              )
-                  : SizedBox.shrink(),
+                  snapShot.connectionState == ConnectionState.done
+                      ? Transform.translate(
+                          offset: const Offset(0, -25),
+                          child: Transform.scale(
+                            scale: 3,
+                            child: Image.asset('assets/images/burning.gif'),
+                          ),
+                        )
+                      : SizedBox.shrink(),
             ),
-            AnimatedBuilder(
-              animation: _todayAnimation,
-              builder: (_, __) => Transform.translate(
-                offset: Offset(0, -20.0 * (1 - _todayAnimation.value)),
-                child: Opacity(
-                  opacity: _todayAnimation.value,
-                  child: CircleAvatar(
-                    child: Container(
-                        decoration: widget.calendarStyle.rangeEndDecoration,
-                        alignment: alignment,
-                        child: Center(
-                            child: Text(text,
-                                style: widget.calendarStyle.rangeEndTextStyle))),
-                  ),
-                ),
-              ),
+            CircleAvatar(
+              child: Container(
+                  decoration: widget.calendarStyle.rangeEndDecoration,
+                  alignment: alignment,
+                  child: Center(
+                      child: Text(text,
+                          style: widget.calendarStyle.rangeEndTextStyle))),
             ),
           ],
         );
@@ -307,13 +327,14 @@ class _CellContentState extends State<CellContent>
         child = Stack(
           alignment: Alignment.center,
           children: [
-            if (widget.openType != OpenType.notStarted)Transform.translate(
-              offset: const Offset(0, -25),
-              child: Transform.scale(
-                scale: 3,
-                child: Image.asset('assets/images/burning.gif'),
+            if (widget.openType != OpenType.notStarted)
+              Transform.translate(
+                offset: const Offset(0, -25),
+                child: Transform.scale(
+                  scale: 3,
+                  child: Image.asset('assets/images/burning.gif'),
+                ),
               ),
-            ),
             CircleAvatar(
               child: Container(
                   decoration: widget.calendarStyle.rangeEndDecoration,
@@ -333,7 +354,8 @@ class _CellContentState extends State<CellContent>
               future: Future.delayed(
                   Duration(milliseconds: widget.shieldAnimationDelay + 200)),
               builder: (_, snapShot) => Opacity(
-                opacity: snapShot.connectionState == ConnectionState.done ? 1 : 0,
+                opacity:
+                    snapShot.connectionState == ConnectionState.done ? 1 : 0,
                 child: Hero(
                   tag: 'shield',
                   child: Image.asset(
@@ -343,7 +365,35 @@ class _CellContentState extends State<CellContent>
                 ),
               ),
             ),
-            Text(text)
+            Text(text),
+            AnimatedBuilder(
+                animation: _sparklingController,
+                builder: (_, __) => Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Opacity(
+                          opacity: _sparklingAnimation1.value,
+                          child: Transform.translate(
+                              offset: const Offset(-15, -15),
+                              child: SvgPicture.asset(
+                                  'assets/images/sparkle.svg')),
+                        ),
+                        Opacity(
+                          opacity: _sparklingAnimation2.value,
+                          child: Transform.translate(
+                              offset: const Offset(0, 25),
+                              child: SvgPicture.asset(
+                                  'assets/images/sparkle.svg')),
+                        ),
+                        Opacity(
+                          opacity: _sparklingAnimation3.value,
+                          child: Transform.translate(
+                              offset: const Offset(20, 0),
+                              child: SvgPicture.asset(
+                                  'assets/images/sparkle.svg')),
+                        ),
+                      ],
+                    ))
           ],
         );
     }

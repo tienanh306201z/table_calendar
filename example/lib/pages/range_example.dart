@@ -25,7 +25,7 @@ class _TableRangeExampleState extends State<TableRangeExample> {
 
   @override
   void initState() {
-    _rangeStart = DateTime.now();
+    _rangeStart = DateTime(2024, 6, 1);
     _rangeEnd = DateTime.now();
     super.initState();
   }
@@ -44,7 +44,7 @@ class _TableRangeExampleState extends State<TableRangeExample> {
             rangeStartDay: _rangeStart,
             rangeEndDay: _rangeEnd,
             shieldedDays: [
-              // DateTime.now(),
+              DateTime.now(),
               DateTime.now().add(const Duration(days: -2)),
             ],
             headerStyle: HeaderStyle(
